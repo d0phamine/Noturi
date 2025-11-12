@@ -1,0 +1,57 @@
+@use "sass:math";
+
+@function rem($pixel) {
+	@if math.is-unitless($pixel) {
+		@return math.div($pixel, 16) + rem;
+	} @else {
+		@error 'Не используйте единицы измерения при работе с функцией rem()! Передавайте аргументом только числа.';
+	}
+}
+
+// Не используй функцию выше, лучше использовать данные миксины
+
+// Вариант 1: Миксин для свойства с rem
+
+// @mixin size-rem($property, $pixels) {
+// 	#{$property}: #{$pixels}px; // Fallback
+// 	#{$property}: math.div($pixels, 16) + rem;
+// }
+
+// Вариант 2: Универсальный миксин для множества значений
+// @mixin responsive($property, $values...) {
+// 	$px-values: ();
+// 	$rem-values: ();
+
+// 	@each $value in $values {
+// 		@if type-of($value) == number {
+// 			$px-values: append($px-values, $value + px);
+// 			$rem-values: append($rem-values, math.div($value, 16) + rem);
+// 		} @else {
+// 			$px-values: append($px-values, $value);
+// 			$rem-values: append($rem-values, $value);
+// 		}
+// 	}
+
+// 	#{$property}: $px-values; // Fallback
+// 	#{$property}: $rem-values;
+// }
+
+// Как их использовать даллее в проекте
+// Вместо
+
+// .element {
+//   font-size: rem(16);
+//   padding: rem(20) rem(10);
+//   margin: rem(30) rem(15) rem(10);
+// }
+
+// Вот так :
+
+// .element {
+//   // Вариант 1
+//   @include size-rem(font-size, 16);
+  
+//   // Вариант 2
+//   @include responsive(padding, 20, 10);
+//   @include responsive(margin, 30, 15, 10);
+// }

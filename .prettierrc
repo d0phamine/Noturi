@@ -1,0 +1,34 @@
+{
+	"tabWidth": 4,
+	"useTabs": true,
+	"bracketSpacing": true,
+	"singleQuote": false,
+	"endOfLine": "crlf",
+	"trailingComma": "none",
+	"semi": false,
+	"plugins": [
+		"@trivago/prettier-plugin-sort-imports"
+	],
+	"importOrder": [
+		"^react(.*)$",
+		"^@gravity-ui/(.*)$",
+		"^[a-zA-Z]",
+		"^@/assets",
+		"^@/styles",
+		"^@/types",
+		"^@/api",
+		"^@/services",
+		"^@/store",
+		"^@/store/(.*)$",
+		"^@/features/(.*)$",
+		"^@/utils/(.*)$",
+		"^@/components",
+		"^@/components/(.*)$",
+		"^@/layouts/(.*)$",
+		"^@/pages/(.*)$",
+		"^[./]",
+		"^.+\\.css$"
+	],
+	"importOrderSeparation": true,
+	"importOrderSortSpecifiers": true
+}

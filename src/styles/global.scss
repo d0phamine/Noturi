@@ -1,0 +1,26 @@
+@use "@fontsource-variable/jetbrains-mono" as *;
+@stylex stylesheet;
+
+* {
+	box-sizing: border-box;
+}
+
+html,
+body {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	font-family: 'JetBrains Mono Variable', monospace;
+	overflow: hidden;
+
+	::-webkit-scrollbar {
+		display: none;
+	}
+
+	#root {
+		height: 100%;
+		overflow: hidden;
+	}
+}
+
