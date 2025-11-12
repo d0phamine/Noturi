@@ -1,0 +1,2 @@
+# Noturi
+Desktop note manager
