@@ -1,15 +1,19 @@
+import { ControlPanel } from "@/features"
 import { MainLayout } from "@/layouts"
 
 import { FC } from "react"
 
-import "./index.scss"
+import { mainPageRecipe } from "./style"
 
 export const MainPage: FC = () => {
 	return (
 		<MainLayout>
-			<div className="main-page">
-				
+			<div className={mainPageRecipe()} data-component="main-page">
+				<ControlPanel />
+				<div></div>
+				<div></div>
 			</div>
 		</MainLayout>
 	)
 }
+

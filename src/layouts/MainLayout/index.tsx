@@ -1,6 +1,6 @@
 import { type FC, type ReactNode } from "react"
 
-import "./index.scss"
+import { layoutWrapperRecipe, mainLayoutRecipe } from "./style"
 
 export interface IMainLayout {
 	children: ReactNode
@@ -8,8 +8,10 @@ export interface IMainLayout {
 
 export const MainLayout: FC<IMainLayout> = ({ children }) => {
 	return (
-		<div className="layout-wrapper">
-			<div className="main-layout">{children}</div>
+		<div className={layoutWrapperRecipe()} data-component="layout-wrapper">
+			<div className={mainLayoutRecipe()} data-component="main-layout">
+				{children}
+			</div>
 		</div>
 	)
 }

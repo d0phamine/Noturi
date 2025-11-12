@@ -1,5 +1,6 @@
 @use "@fontsource-variable/jetbrains-mono" as *;
-@stylex stylesheet;
+
+@layer reset, base, tokens, recipes, utilities;
 
 * {
 	box-sizing: border-box;
@@ -11,8 +12,9 @@ body {
 	height: 100%;
 	padding: 0;
 	margin: 0;
-	font-family: 'JetBrains Mono Variable', monospace;
+	font-family: "JetBrains Mono Variable", monospace;
 	overflow: hidden;
+	
 
 	::-webkit-scrollbar {
 		display: none;
