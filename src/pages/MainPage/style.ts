@@ -5,7 +5,7 @@ export const mainPageRecipe = cva({
 		height: "100%",
 		overflow: "hidden",
 		display: "grid",
-		gridTemplateColumns: "48px 1fr 1fr",
+		gridTemplateColumns: "{spacing.12} {spacing.56} 1fr",
 		bg: "bg.primary",
 		borderTopWidth: "1px",
         borderTopColor: "border.primary",
