@@ -19,15 +19,21 @@ export const controlPanelTabsRecipe = defineSlotRecipe({
 	base: {
 		trigger: {
 			_selected: {
-				color: "text.primary"
+				color: "text.primary",
+				_hover: {
+					color: "text.primary"
+				}
+			},
+			_hover: {
+				color: "text.secondary"
 			},
 			paddingBlock: "{spacing.3}",
 			color: "text.tertiary"
 		},
 		indicator: {
-			borderRadius: "{radii.none}",
+			borderRadius: "radii.none",
 			borderLeftWidth: "{spacing.0.5}",
-			borderLeftColor: "{info}",
+			borderLeftColor: "info",
 			borderLeftStyle: "solid",
 			bg: "transparent",
 			shadow: "none"
@@ -40,8 +46,12 @@ export const controlPanelSettingsRecipe = cva({
 		mt: "auto",
 		color: "text.tertiary",
 		_hover: {
-			color: "text.primary",
+			color: "text.secondary",
 			bg: "transparent"
+		},
+		"& svg": {
+			width: "{spacing.6}",
+			height: "{spacing.6}"
 		}
 	}
 })
