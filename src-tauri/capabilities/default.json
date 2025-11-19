@@ -24,10 +24,85 @@
       "identifier": "fs:scope",
       "allow": [
         {
-          "path": "$HOME/"
+          "path": "$HOME"
+        },
+        {
+          "path": "$HOME/*"
         },
         {
           "path": "$HOME/**"
+        },
+        {
+          "path": "$DESKTOP"
+        },
+        {
+          "path": "$DESKTOP/*"
+        },
+        {
+          "path": "$DESKTOP/**"
+        },
+        {
+          "path": "$DOCUMENT"
+        },
+        {
+          "path": "$DOCUMENT/*"
+        },
+        {
+          "path": "$DOCUMENT/**"
+        },
+        {
+          "path": "$DOWNLOAD"
+        },
+        {
+          "path": "$DOWNLOAD/*"
+        },
+        {
+          "path": "$DOWNLOAD/**"
+        },
+        {
+          "path": "$PICTURE"
+        },
+        {
+          "path": "$PICTURE/*"
+        },
+        {
+          "path": "$PICTURE/**"
+        },
+        {
+          "path": "$VIDEO"
+        },
+        {
+          "path": "$VIDEO/*"
+        },
+        {
+          "path": "$VIDEO/**"
+        },
+        {
+          "path": "$AUDIO"
+        },
+        {
+          "path": "$AUDIO/*"
+        },
+        {
+          "path": "$AUDIO/**"
+        },
+        {
+          "path": "$PUBLIC"
+        },
+        {
+          "path": "$PUBLIC/*"
+        },
+        {
+          "path": "$PUBLIC/**"
+        },
+        {
+          "path": "$TEMPLATE"
+        },
+        {
+          "path": "$TEMPLATE/*"
+        },
+        {
+          "path": "$TEMPLATE/**"
         }
       ]
     },
