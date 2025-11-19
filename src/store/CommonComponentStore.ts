@@ -8,7 +8,7 @@ export interface ICommonComponentStore {
 
 export class CommonComponentStore {
 	public CommonComponentStoreData: ICommonComponentStore = {
-		controlPanelActiveEl: null
+		controlPanelActiveEl: null,
 	}
 
 	constructor() {

@@ -73,6 +73,7 @@ export const themeTokens = {
 		}
 	},
 	fontSizes: {
+		"2xs": { value: "0.5rem" },
 		xs: { value: "0.75rem" },
 		sm: { value: "0.875rem" },
 		md: { value: "1rem" },
