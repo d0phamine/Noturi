@@ -213,6 +213,12 @@ export const themeTokens = {
 export const semanticTokens = {
 	colors: {
 		bg: {
+			accent: {
+				value: {
+					base: "{colors.gray.100}",
+					_dark: "{colors.gray.900}"
+				}
+			},
 			primary: {
 				value: {
 					base: "{colors.gray.50}",
@@ -289,6 +295,38 @@ export const semanticTokens = {
 				base: "{colors.primary.500}",
 				_dark: "{colors.primary.300}"
 			}
+		},
+		buttons: {
+			solid: {
+				value: {
+					base: "{colors.primary.300}",
+					_dark: "{colors.primary.400}"
+				}
+			},
+			solid_hover: {
+				value: {
+					base: "{colors.primary.200}",
+					_dark: "{colors.primary.300}"
+				}
+			},
+			contrast: {
+				value: {
+					base: "{colors.gray.50}",
+					_dark: "{colors.gray.900}"
+				}
+			},
+			fg: {
+				value: {
+					base: "{colors.primary.600}",
+					_dark: "{colors.primary.300}"
+				}
+			},
+			muted: {
+				value: {
+					base: "{colors.primary.100}",
+					_dark: "{colors.primary.800}"
+				}
+			},
 		}
 	}
 }

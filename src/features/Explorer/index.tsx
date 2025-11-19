@@ -1,8 +1,10 @@
-import { Accordion } from "@chakra-ui/react"
+import { Accordion, Button } from "@chakra-ui/react"
 
 import { FC } from "react"
 
 import { observer } from "mobx-react-lite"
+
+import { useStores } from "@/store"
 
 import { AccordionExplorerItem } from "@/components"
 
@@ -14,6 +16,8 @@ import {
 } from "./style"
 
 export const Explorer: FC = observer(() => {
+	const { FsStore } = useStores()
+
 	return (
 		<div data-component="explorer" className={explorerRecipe()}>
 			<div
@@ -26,13 +30,26 @@ export const Explorer: FC = observer(() => {
 				data-component="explorer-content"
 				className={explorerContentRecipe()}
 			>
-				<Accordion.Root collapsible size="sm" variant="subtle">
+				<Accordion.Root
+					collapsible
+					size="sm"
+					variant="subtle"
+					defaultValue={["workspace"]}
+					multiple
+				>
 					<AccordionExplorerItem
 						item={{ value: "open editors", title: "open editors" }}
 					></AccordionExplorerItem>
 					<AccordionExplorerItem
 						item={{ value: "workspace", title: "workspace" }}
-					></AccordionExplorerItem>
+					>
+						<Button
+							size={"xs"}
+							onClick={() => FsStore.setSelectedFolder()}
+						>
+							Select folder
+						</Button>
+					</AccordionExplorerItem>
 					<AccordionExplorerItem
 						item={{ value: "timeline", title: "timeline" }}
 					></AccordionExplorerItem>

@@ -5,7 +5,7 @@ export const explorerRecipe = cva({
 		height: "100%",
 		display: "grid",
 		gridTemplateRows: "{spacing.9} auto {spacing.6}",
-		bg: "{colors.gray.900}",
+		bg: "bg.accent",
 		borderRightWidth: "{spacing.px}",
 		borderRightColor: "border.primary",
 		borderRightStyle: "solid"
@@ -22,7 +22,8 @@ export const explorerHeaderRecipe = cva({
 		borderBottomStyle: "solid",
 		display: "flex",
 		alignItems: "center",
-		padding: "0px {spacing.5}"
+		padding: "0px {spacing.5}",
+		bg: "bg.accent",
 	}
 })
 
