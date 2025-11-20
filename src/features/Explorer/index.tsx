@@ -14,6 +14,7 @@ import {
 	explorerContentRecipe,
 	explorerFooterRecipe,
 	explorerHeaderRecipe,
+	explorerAccordionWorkspaceButtonBlockRecipe,
 	explorerRecipe
 } from "./style"
 
@@ -55,12 +56,14 @@ export const Explorer: FC = observer(() => {
 						{selectedFileTree ? (
 							<WorkspaceTreeView />
 						) : (
-							<Button
-								size={"xs"}
-								onClick={() => FsStore.setSelectedFolder()}
-							>
-								Select folder
-							</Button>
+							<div className={explorerAccordionWorkspaceButtonBlockRecipe()}>
+								<Button
+									size={"xs"}
+									onClick={() => FsStore.setSelectedFolder()}
+								>
+									Select folder
+								</Button>
+							</div>
 						)}
 					</AccordionExplorerItem>
 					<AccordionExplorerItem

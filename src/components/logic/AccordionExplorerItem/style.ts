@@ -9,12 +9,11 @@ export const accordionCustomItemRecipe = defineSlotRecipe({
 			borderBottomStyle: "solid",
 			display: "flex",
 			flexDirection: "column",
-			// Ключевые свойства для элементов аккордеона
 			"&[data-state=open]": {
-				flex: "1 1 auto", // Когда открыт - растягивается, занимая доступное пространство
+				flex: "1 1 auto"
 			},
 			"&[data-state=closed]": {
-				flex: "0 0 auto", // Когда закрыт - сжимается до своего содержимого
+				flex: "0 0 auto"
 			}
 		},
 		itemTrigger: {
@@ -31,14 +30,16 @@ export const accordionCustomItemRecipe = defineSlotRecipe({
 			minHeight: 0,
 			maxHeight: "100%",
 			display: "flex",
-			flexDirection: "column"
+			flexDirection: "column",
+			padding:"0"
 		},
 		itemBody: {
 			display: "flex",
-			justifyContent: "center",
+			justifyContent: "start",
 			overflow: "auto",
 			flex: "1 1 auto",
 			minHeight: 0,
+			padding: "0 0",
 
 			"& button": {
 				width: "100%",

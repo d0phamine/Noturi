@@ -49,6 +49,13 @@ export const explorerAccordionRootRecipe = defineSlotRecipe({
 	}
 })
 
+export const explorerAccordionWorkspaceButtonBlockRecipe = cva({
+	base:{
+		padding:"{spacing.4} {spacing.4}",
+		w: "100%"
+	}
+})
+
 export const explorerFooterRecipe = cva({
 	base: {
 		borderTopWidth: "{spacing.px}",

@@ -7,6 +7,12 @@ import { observer } from "mobx-react-lite"
 import { useStores } from "@/store"
 import { FileTree } from "@/store/FsStore"
 
+import {
+	getLimitedLevel,
+	workspaceTreeViewElemRecipe,
+	workspaceTreeViewRecipe
+} from "./style"
+
 export const WorkspaceTreeView: FC = observer(() => {
 	const { FsStore } = useStores()
 
@@ -32,6 +38,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 			togglableSelect
 			clickAction="EXCLUSIVE_SELECT"
 			multiSelect
+			className={workspaceTreeViewRecipe()}
 			nodeRenderer={({
 				element,
 				isBranch,
@@ -42,7 +49,9 @@ export const WorkspaceTreeView: FC = observer(() => {
 			}) => (
 				<div
 					{...getNodeProps()}
-					style={{ paddingLeft: 20 * (level - 1) }}
+					className={workspaceTreeViewElemRecipe({
+						level: getLimitedLevel(level)
+					})}
 				>
 					{isBranch ? <FolderIcon isOpen={isExpanded} /> : <File />}
 					{element.name}
