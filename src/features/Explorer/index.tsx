@@ -1,21 +1,16 @@
-import {
-	Accordion,
-	Button,
-	TreeView,
-	createTreeCollection
-} from "@chakra-ui/react"
+import { WorkspaceTreeView } from "@/features"
+import { Accordion, Button, useSlotRecipe } from "@chakra-ui/react"
 
-import { FC, useMemo } from "react"
+import { FC } from "react"
 
-import { ChevronRight, File, Folder } from "lucide-react"
 import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
-import { FileTree } from "@/store/FsStore"
 
 import { AccordionExplorerItem } from "@/components"
 
 import {
+	explorerAccordionRootRecipe,
 	explorerContentRecipe,
 	explorerFooterRecipe,
 	explorerHeaderRecipe,
@@ -23,25 +18,13 @@ import {
 } from "./style"
 
 export const Explorer: FC = observer(() => {
+	const accordionRootRecipe = useSlotRecipe({
+		recipe: explorerAccordionRootRecipe
+	})
+	const accordionRootStyles = accordionRootRecipe()
 	const { FsStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
-
-	const fileTree = useMemo(
-		() =>
-			createTreeCollection<FileTree>({
-				nodeToValue: (node) => node.id,
-				nodeToString: (node) => node.name,
-				rootNode: {
-					id: "root",
-					name: "root",
-					path: "/",
-					isDirectory: true,
-					children: selectedFileTree ?? []
-				}
-			}),
-		[selectedFileTree]
-	)
 
 	return (
 		<div data-component="explorer" className={explorerRecipe()}>
@@ -61,6 +44,7 @@ export const Explorer: FC = observer(() => {
 					variant="subtle"
 					defaultValue={["workspace"]}
 					multiple
+					css={accordionRootStyles.root}
 				>
 					<AccordionExplorerItem
 						item={{ value: "open editors", title: "open editors" }}
@@ -69,46 +53,7 @@ export const Explorer: FC = observer(() => {
 						item={{ value: "workspace", title: "workspace" }}
 					>
 						{selectedFileTree ? (
-							<TreeView.Root
-								collection={fileTree}
-								maxW="xs"
-								size={"xs"}
-								expandOnClick={false}
-							>
-								<TreeView.Tree
-									css={{ "--tree-indentation": "2px" }}
-								>
-									<TreeView.Node
-										indentGuide={
-											<TreeView.BranchIndentGuide />
-										}
-										render={({ node, nodeState }) =>
-											nodeState.isBranch ? (
-												<TreeView.BranchControl>
-													<TreeView.BranchTrigger>
-														<TreeView.BranchIndicator
-															asChild
-														>
-															<ChevronRight />
-														</TreeView.BranchIndicator>
-													</TreeView.BranchTrigger>
-													<Folder />
-													<TreeView.BranchText>
-														{node.name}
-													</TreeView.BranchText>
-												</TreeView.BranchControl>
-											) : (
-												<TreeView.Item>
-													<File />
-													<TreeView.ItemText>
-														{node.name}
-													</TreeView.ItemText>
-												</TreeView.Item>
-											)
-										}
-									/>
-								</TreeView.Tree>
-							</TreeView.Root>
+							<WorkspaceTreeView />
 						) : (
 							<Button
 								size={"xs"}

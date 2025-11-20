@@ -44,7 +44,7 @@ export class FsStore {
 		for (const entry of entries) {
 			const fullPath = `${path}/${entry.name}`
 			const node: FileTree = {
-				id: entry.name,
+				id: uuidv4(),
 				name: entry.name,
 				path: fullPath,
 				isDirectory: entry.isDirectory
