@@ -10,8 +10,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "windows": [
-    ],
+    "windows": [],
     "security": {
       "csp": null
     }
@@ -26,5 +25,10 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ]
+  },
+  "plugins": {
+    "fs": {
+      "requireLiteralLeadingDot": false
+    }
   }
 }

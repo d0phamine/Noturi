@@ -30,15 +30,13 @@ export class FsStore {
 	/**
 	 * Recursive function for setting folder tree for selected folder
 	 * @param {string} path - The path to the directory to read.
-	 * @param {BaseDirectory} baseDir - The base directory to read from.
 	 * @private
 	 */
 
 	private setSelectedFolderTree = async (
-		path: string,
-		baseDir: BaseDirectory
+		path: string
 	): Promise<FileTree[]> => {
-		const entries = await readDir(path, { baseDir })
+		const entries = await readDir(path)
 		const tree: FileTree[] = []
 
 		for (const entry of entries) {
@@ -51,10 +49,7 @@ export class FsStore {
 			}
 
 			if (entry.isDirectory) {
-				node.children = await this.setSelectedFolderTree(
-					fullPath,
-					baseDir
-				)
+				node.children = await this.setSelectedFolderTree(fullPath)
 			}
 
 			tree.push(node)
@@ -67,13 +62,12 @@ export class FsStore {
 		try {
 			const path = await open({
 				multiple: false,
-				directory: true
+				directory: true,
+				recursive: true
 			})
+			console.log(path, "path")
 			if (path) {
-				const tree = await this.setSelectedFolderTree(
-					path,
-					BaseDirectory.Document
-				)
+				const tree = await this.setSelectedFolderTree(path)
 				runInAction(() => {
 					this.FsStoreData.selectedPath = path
 					this.FsStoreData.selectedFileTree = tree
