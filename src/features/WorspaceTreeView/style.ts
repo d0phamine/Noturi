@@ -12,13 +12,19 @@ export const workspaceTreeViewElemRecipe = cva({
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
-		gap: "{spacing.2}",
+		gap: "{spacing.1}",
 		_hover: {
 			bg: "bg.tertiary"
 		},
 		"& svg": {
 			width: "{spacing.3}",
-			height: "{spacing.3}"
+			height: "{spacing.3}",
+            flexShrink: "0"
+		},
+		"& p": {
+			textOverflow: "clip",
+            overflow: "hidden",
+            whiteSpace: "nowrap"
 		}
 	},
 	variants: {
@@ -38,8 +44,17 @@ export const workspaceTreeViewElemRecipe = cva({
 	}
 })
 
+export const workspaceTreeViewSpacerRecipe = cva({
+    base: {
+        width: "{spacing.3}",
+        height: "{spacing.3}",
+        flexShrink: 0
+    }
+})
+
 type TreeLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
 
 export const getLimitedLevel = (level: number): TreeLevel => {
 	return Math.min(Math.max(0, level), 10) as TreeLevel
 }
+

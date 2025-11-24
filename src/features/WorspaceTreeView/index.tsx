@@ -1,7 +1,13 @@
 import { FC } from "react"
 import TreeView, { flattenTree } from "react-accessible-treeview"
 
-import { ChevronRight, File, Folder, FolderOpen } from "lucide-react"
+import {
+	ChevronDown,
+	ChevronRight,
+	File,
+	Folder,
+	FolderOpen
+} from "lucide-react"
 import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
@@ -10,7 +16,8 @@ import { FileTree } from "@/store/FsStore"
 import {
 	getLimitedLevel,
 	workspaceTreeViewElemRecipe,
-	workspaceTreeViewRecipe
+	workspaceTreeViewRecipe,
+	workspaceTreeViewSpacerRecipe
 } from "./style"
 
 export const WorkspaceTreeView: FC = observer(() => {
@@ -30,6 +37,9 @@ export const WorkspaceTreeView: FC = observer(() => {
 
 	const FolderIcon: FC<{ isOpen: boolean }> = ({ isOpen }) =>
 		isOpen ? <FolderOpen /> : <Folder />
+
+	const ChevronIcon: FC<{ isOpen: boolean }> = ({ isOpen }) =>
+		isOpen ? <ChevronDown /> : <ChevronRight />
 
 	return (
 		<TreeView
@@ -53,8 +63,13 @@ export const WorkspaceTreeView: FC = observer(() => {
 						level: getLimitedLevel(level)
 					})}
 				>
+					{isBranch ? (
+						<ChevronIcon isOpen={isExpanded} />
+					) : (
+						<div className={workspaceTreeViewSpacerRecipe()}></div>
+					)}
 					{isBranch ? <FolderIcon isOpen={isExpanded} /> : <File />}
-					{element.name}
+					<p>{element.name}</p>
 				</div>
 			)}
 		/>
