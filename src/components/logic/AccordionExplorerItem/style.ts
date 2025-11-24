@@ -4,9 +4,9 @@ export const accordionCustomItemRecipe = defineSlotRecipe({
 	slots: ["item", "itemTrigger", "itemIndicator", "itemContent", "itemBody"],
 	base: {
 		item: {
-			borderBottomWidth: "{spacing.px}",
-			borderBottomColor: "border.primary",
-			borderBottomStyle: "solid",
+			borderTopWidth: "{spacing.px}",
+			borderTopColor: "border.primary",
+			borderTopStyle: "solid",
 			display: "flex",
 			flexDirection: "column",
 			"&[data-state=open]": {

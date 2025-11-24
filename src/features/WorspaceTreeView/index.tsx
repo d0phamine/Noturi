@@ -1,17 +1,18 @@
+import { getExtension } from "@/utils"
+
 import { FC } from "react"
 import TreeView, { flattenTree } from "react-accessible-treeview"
 
-import {
-	ChevronDown,
-	ChevronRight,
-	File,
-	Folder,
-	FolderOpen
-} from "lucide-react"
 import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
 import { FileTree } from "@/store/FsStore"
+
+import {
+	ChevronExplorerIcon,
+	FileExplorerIcon,
+	FolderExplorerIcon
+} from "@/components"
 
 import {
 	getLimitedLevel,
@@ -34,12 +35,6 @@ export const WorkspaceTreeView: FC = observer(() => {
 	}
 
 	const data = flattenTree(rootNode)
-
-	const FolderIcon: FC<{ isOpen: boolean }> = ({ isOpen }) =>
-		isOpen ? <FolderOpen /> : <Folder />
-
-	const ChevronIcon: FC<{ isOpen: boolean }> = ({ isOpen }) =>
-		isOpen ? <ChevronDown /> : <ChevronRight />
 
 	return (
 		<TreeView
@@ -64,11 +59,15 @@ export const WorkspaceTreeView: FC = observer(() => {
 					})}
 				>
 					{isBranch ? (
-						<ChevronIcon isOpen={isExpanded} />
+						<ChevronExplorerIcon isOpen={isExpanded} />
 					) : (
 						<div className={workspaceTreeViewSpacerRecipe()}></div>
 					)}
-					{isBranch ? <FolderIcon isOpen={isExpanded} /> : <File />}
+					{isBranch ? (
+						<FolderExplorerIcon isOpen={isExpanded} />
+					) : (
+						<FileExplorerIcon />
+					)}
 					<p>{element.name}</p>
 				</div>
 			)}

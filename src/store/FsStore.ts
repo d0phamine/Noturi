@@ -1,5 +1,6 @@
+import { sortFileTreeByAlphabet } from "@/utils"
 import { open } from "@tauri-apps/plugin-dialog"
-import { DirEntry, readDir } from "@tauri-apps/plugin-fs"
+import { readDir } from "@tauri-apps/plugin-fs"
 
 import { makeAutoObservable, runInAction } from "mobx"
 import { v4 as uuidv4 } from "uuid"
@@ -40,16 +41,17 @@ export class FsStore {
 
 		const sortedDirs = entries
 			.filter((elem) => elem.isDirectory)
-			.sort((a, b) => this.sortFileTreeByAlphabet(a, b))
+			.sort((a, b) => sortFileTreeByAlphabet(a, b))
 		const sortedFiles = entries
 			.filter((elem) => !elem.isDirectory)
-			.sort((a, b) => this.sortFileTreeByAlphabet(a, b))
+			.sort((a, b) => sortFileTreeByAlphabet(a, b))
 
 		const sortedAlphabetArr = sortedDirs.concat(sortedFiles)
 		const tree: FileTree[] = []
 
 		for (const entry of sortedAlphabetArr) {
 			const fullPath = `${path}/${entry.name}`
+
 			const node: FileTree = {
 				id: uuidv4(),
 				name: entry.name,
@@ -65,24 +67,6 @@ export class FsStore {
 		}
 
 		return tree
-	}
-
-	/**
-	 * Function for sorting dirs and files separataly by alphabet
-	 * @param {DirEntry} a
-	 * @param {DirEntry} b
-	 * @private
-	 */
-
-	private sortFileTreeByAlphabet = (a: DirEntry, b: DirEntry) => {
-		const nameA = a.name.toLowerCase()
-		const nameB = b.name.toLowerCase()
-		if (nameA && nameB) {
-			if (nameA < nameB) return -1
-			if (nameA > nameB) return 1
-		}
-
-		return 0
 	}
 
 	/**
