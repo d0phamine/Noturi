@@ -14,17 +14,21 @@ export const workspaceTreeViewElemRecipe = cva({
 		alignItems: "center",
 		gap: "{spacing.px}",
 		_hover: {
-			bg: "bg.tertiary"
+			bg: "bg.secondary"
+		},
+		_selected: {
+			boxShadow: "inset 0 0 0 1px {colors.primary.400}",
+			bg: "bg.secondary"
 		},
 		"& svg": {
 			width: "{spacing.4}",
 			height: "{spacing.4}",
-            flexShrink: "0"
+			flexShrink: "0"
 		},
 		"& p": {
 			textOverflow: "clip",
-            overflow: "hidden",
-            whiteSpace: "nowrap"
+			overflow: "hidden",
+			whiteSpace: "nowrap"
 		}
 	},
 	variants: {
@@ -45,11 +49,11 @@ export const workspaceTreeViewElemRecipe = cva({
 })
 
 export const workspaceTreeViewSpacerRecipe = cva({
-    base: {
-        width: "{spacing.4}",
-        height: "{spacing.4}",
-        flexShrink: 0
-    }
+	base: {
+		width: "{spacing.4}",
+		height: "{spacing.4}",
+		flexShrink: 0
+	}
 })
 
 type TreeLevel = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10

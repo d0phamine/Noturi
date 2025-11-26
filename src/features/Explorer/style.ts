@@ -9,9 +9,6 @@ export const explorerRecipe = cva({
 		display: "grid",
 		gridTemplateRows: "{spacing.9} 1fr {spacing.6}",
 		bg: "bg.accent",
-		borderRightWidth: "{spacing.px}",
-		borderRightColor: "border.primary",
-		borderRightStyle: "solid"
 	}
 })
 

@@ -9,6 +9,7 @@ import {
 	FolderAzure,
 	FolderBlueCode,
 	FolderBruno,
+	FolderBlue,
 	FolderBuild,
 	FolderClaude,
 	FolderConfig,
@@ -102,6 +103,7 @@ const folderIconMapping: FolderIconMapping = {
 		out: FolderBuild,
 		output: FolderBuild,
 		target: FolderTarget,
+		docker: FolderBlue,
 
 		// Testing
 		test: FolderCypress,

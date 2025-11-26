@@ -305,7 +305,7 @@ const fileIconMapping: FileIconMapping = {
 		"pulumi.yaml": Pulumi,
 		"lunaria.config.json": Lunaria,
 		"keystatic.config.ts": Keystatic,
-		Jenkinsfile: Jenkins,
+		jenkinsfile: Jenkins,
 		".gitlab-ci.yml": Gitlab,
 		"docusaurus.config.js": Docusaurus,
 		"deno.json": Deno,
@@ -602,27 +602,27 @@ export const ExplorerFileIcon: React.FC<FileIconProps> = ({
 		const lowerFileName = fileName.toLowerCase()
 
 		// 1. Проверяем точное совпадение имени файла
-		if (fileIconMapping.fileName?.[lowerFileName]) {
-			return fileIconMapping.fileName[lowerFileName]
+		if (fileIconMapping.fileName?.[fileName]) {
+			return fileIconMapping.fileName[fileName]
 		}
 
 		// 2. Проверяем паттерны
 		if (fileIconMapping.filePattern) {
 			for (const { pattern, icon } of fileIconMapping.filePattern) {
-				if (pattern.test(lowerFileName)) {
+				if (pattern.test(fileName)) {
 					return icon
 				}
 			}
 		}
 
 		// 3. Проверяем расширение
-		const ext = "." + lowerFileName.split(".").pop()
+		const ext = "." + fileName.split(".").pop()
 		if (fileIconMapping.extension?.[ext]) {
 			return fileIconMapping.extension[ext]
 		}
 
 		// 4. Проверяем составные расширения (.test.ts, .d.ts и т.д.)
-		const parts = lowerFileName.split(".")
+		const parts = fileName.split(".")
 		if (parts.length > 2) {
 			const compoundExt = "." + parts.slice(-2).join(".")
 			if (fileIconMapping.extension?.[compoundExt]) {

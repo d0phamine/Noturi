@@ -9,7 +9,7 @@ export default defineConfig({
 	jsxFramework: "react",
 	outdir: "src/styles/panda",
 	conditions: {
-		dark: "@media (prefers-color-scheme: dark)" // Добавлено по умолчанию
+		dark: "@media (prefers-color-scheme: dark)",
 	},
 
 	theme: {
@@ -17,6 +17,7 @@ export default defineConfig({
 			tokens: themeTokens,
 			semanticTokens: semanticTokens
 		}
-	}
+	},
+	
 })
 
