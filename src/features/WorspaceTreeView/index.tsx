@@ -1,5 +1,3 @@
-import { getExtension } from "@/utils"
-
 import { FC } from "react"
 import TreeView, { flattenTree } from "react-accessible-treeview"
 
@@ -10,8 +8,8 @@ import { FileTree } from "@/store/FsStore"
 
 import {
 	ChevronExplorerIcon,
-	FileExplorerIcon,
-	FolderExplorerIcon
+	ExplorerFileIcon,
+	ExplorerFolderIcon
 } from "@/components"
 
 import {
@@ -64,9 +62,12 @@ export const WorkspaceTreeView: FC = observer(() => {
 						<div className={workspaceTreeViewSpacerRecipe()}></div>
 					)}
 					{isBranch ? (
-						<FolderExplorerIcon isOpen={isExpanded} />
+						<ExplorerFolderIcon
+							isOpen={isExpanded}
+							folderName={element.name}
+						/>
 					) : (
-						<FileExplorerIcon />
+						<ExplorerFileIcon fileName={element.name} />
 					)}
 					<p>{element.name}</p>
 				</div>

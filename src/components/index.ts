@@ -1,3 +1,4 @@
 export * from "./logic/AccordionExplorerItem"
 
-export * from "./ui/IconsExplorer"
+export * from "./ui/ExplorerFileIcon"
+export * from "./ui/ExplorerFolderIcon"

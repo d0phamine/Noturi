@@ -12,13 +12,13 @@ export const workspaceTreeViewElemRecipe = cva({
 		display: "flex",
 		flexDirection: "row",
 		alignItems: "center",
-		gap: "{spacing.1}",
+		gap: "{spacing.px}",
 		_hover: {
 			bg: "bg.tertiary"
 		},
 		"& svg": {
-			width: "{spacing.3}",
-			height: "{spacing.3}",
+			width: "{spacing.4}",
+			height: "{spacing.4}",
             flexShrink: "0"
 		},
 		"& p": {
@@ -46,8 +46,8 @@ export const workspaceTreeViewElemRecipe = cva({
 
 export const workspaceTreeViewSpacerRecipe = cva({
     base: {
-        width: "{spacing.3}",
-        height: "{spacing.3}",
+        width: "{spacing.4}",
+        height: "{spacing.4}",
         flexShrink: 0
     }
 })
