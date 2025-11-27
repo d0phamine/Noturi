@@ -15,6 +15,7 @@
     "@chakra-ui/react": "^3.30.0",
     "@emotion/react": "^11.14.0",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@monaco-editor/react": "^4.7.0",
     "@pandacss/postcss": "^1.5.0",
     "@react-symbols/icons": "^1.2.11",
     "@tauri-apps/api": "^2",

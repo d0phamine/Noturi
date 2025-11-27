@@ -7,7 +7,7 @@ export const explorerRecipe = cva({
 		height: "100%",
 		overflow: "hidden",
 		display: "grid",
-		gridTemplateRows: "{spacing.9} 1fr {spacing.6}",
+		gridTemplateRows: "{spacing.9} 1fr",
 		bg: "bg.accent",
 	}
 })

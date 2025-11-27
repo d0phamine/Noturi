@@ -9,7 +9,6 @@ import { useStores } from "@/store"
 import { ControlPanelActiveElType } from "@/store/CommonComponentStore"
 
 import {
-	controlPanelFooter,
 	controlPanelRecipe,
 	controlPanelSettingsRecipe,
 	controlPanelTabsRecipe
@@ -57,10 +56,6 @@ export const ControlPanel: FC = observer(() => {
 			>
 				<Settings></Settings>
 			</IconButton>
-			<div
-				data-component="control-panel-footer"
-				className={controlPanelFooter()}
-			></div>
 		</div>
 	)
 })

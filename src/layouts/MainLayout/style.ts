@@ -13,6 +13,7 @@ export const mainLayoutRecipe = cva({
 		height: "100%",
 		overflow: "hidden",
 		display: "grid",
+		gridTemplateRows: "1fr {spacing.5}"
 	}
 })
 

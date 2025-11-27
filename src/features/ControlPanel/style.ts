@@ -61,7 +61,8 @@ export const controlPanelFooter = cva({
 		height: "{spacing.6}",
 		borderTopWidth: "{spacing.px}",
 		borderTopColor: "border.primary",
-		borderTopStyle: "solid"
+		borderTopStyle: "solid",
+		flexShrink: 0
 	}
 })
 

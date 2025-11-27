@@ -1,4 +1,4 @@
-import { ControlPanel, Explorer, FileSearch } from "@/features"
+import { ControlPanel, Explorer, FileSearch, WorkSpace } from "@/features"
 import { MainLayout } from "@/layouts"
 import { Splitter, useSlotRecipe } from "@chakra-ui/react"
 
@@ -8,7 +8,7 @@ import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
 
-import { mainPageRecipe, mainPageSplitterRecipe } from "./style"
+import { mainPageRecipe, mainPageSplitterRecipe, mainPageFooterRecipe } from "./style"
 
 export const MainPage: FC = observer(() => {
 	const { CommonComponentStore } = useStores()
@@ -29,7 +29,7 @@ export const MainPage: FC = observer(() => {
 					<Splitter.Root
 						panels={[{ id: "leftExplorer" }, { id: "rightWindow" }]}
 						borderWidth="1px"
-						defaultSize={[45, 55]}
+						defaultSize={[30, 70]}
 						css={splitterStyle.root}
 					>
 						<Splitter.Panel
@@ -51,11 +51,12 @@ export const MainPage: FC = observer(() => {
 							/>
 						</Splitter.ResizeTrigger>
 						<Splitter.Panel id="rightWindow">
-							<div></div>
+							<WorkSpace />
 						</Splitter.Panel>
 					</Splitter.Root>
 				) : null}
 			</div>
+			<div className={mainPageFooterRecipe()}></div>
 		</MainLayout>
 	)
 })

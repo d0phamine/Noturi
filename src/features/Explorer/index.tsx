@@ -71,10 +71,6 @@ export const Explorer: FC = observer(() => {
 					></AccordionExplorerItem>
 				</Accordion.Root>
 			</div>
-			<div
-				data-component="explorer-footer"
-				className={explorerFooterRecipe()}
-			></div>
 		</div>
 	)
 })
