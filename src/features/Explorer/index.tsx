@@ -12,7 +12,6 @@ import { AccordionExplorerItem } from "@/components"
 import {
 	explorerAccordionRootRecipe,
 	explorerContentRecipe,
-	explorerFooterRecipe,
 	explorerHeaderRecipe,
 	explorerAccordionWorkspaceButtonBlockRecipe,
 	explorerRecipe

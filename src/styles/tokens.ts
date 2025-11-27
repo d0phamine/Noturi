@@ -22,7 +22,20 @@ export const themeTokens = {
 			600: { value: "#4A5568" },
 			700: { value: "#2D3748" },
 			800: { value: "#1A202C" },
-			900: { value: "#171923" }
+			900: { value: "#171924" }
+		},
+		black: {
+			50: { value: "#FAFAFA" },
+			100: { value: "#F5F5F5" },
+			200: { value: "#E5E5E5" },
+			300: { value: "#D4D4D4" },
+			400: { value: "#A3A3A3" },
+			500: { value: "#737373" },
+			600: { value: "#525252" },
+			700: { value: "#404040" },
+			800: { value: "#262626" },
+			900: { value: "#171717" },
+			950: { value: "#0A0A0A" }
 		},
 		red: {
 			50: { value: "#FFF5F5" },
@@ -262,13 +275,13 @@ export const semanticTokens = {
 			primary: {
 				value: {
 					base: "{colors.gray.200}",
-					_dark: "{colors.gray.600}"
+					_dark: "{colors.black.900}"
 				}
 			},
 			secondary: {
 				value: {
 					base: "{colors.gray.300}",
-					_dark: "{colors.gray.700}"
+					_dark: "{colors.black.700}"
 				}
 			}
 		},
@@ -326,7 +339,7 @@ export const semanticTokens = {
 					base: "{colors.primary.100}",
 					_dark: "{colors.primary.800}"
 				}
-			},
+			}
 		}
 	}
 }

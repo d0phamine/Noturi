@@ -4,6 +4,8 @@ import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
 
+import { WorkSpaceTabs } from "@/components"
+
 import { workspaceHeaderRecipe, workspaceRecipe } from "./style"
 
 export const WorkSpace: FC = observer(() => {
@@ -12,9 +14,10 @@ export const WorkSpace: FC = observer(() => {
 			<div
 				data-component="workspace-header"
 				className={workspaceHeaderRecipe()}
-			></div>
+			>
+				<WorkSpaceTabs />
+			</div>
 			<div data-component="workspace-content"></div>
-			<div data-component="workspace-footer"></div>
 		</div>
 	)
 })

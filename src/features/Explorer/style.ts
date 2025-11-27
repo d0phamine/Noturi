@@ -50,12 +50,3 @@ export const explorerAccordionWorkspaceButtonBlockRecipe = cva({
 	}
 })
 
-export const explorerFooterRecipe = cva({
-	base: {
-		borderTopWidth: "{spacing.px}",
-		borderTopColor: "border.primary",
-		borderTopStyle: "solid",
-		bg: "bg.primary"
-	}
-})
-

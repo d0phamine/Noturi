@@ -4,9 +4,10 @@ export const accordionCustomItemRecipe = defineSlotRecipe({
 	slots: ["item", "itemTrigger", "itemIndicator", "itemContent", "itemBody"],
 	base: {
 		item: {
-			borderTopWidth: "{spacing.px}",
-			borderTopColor: "border.primary",
-			borderTopStyle: "solid",
+			borderBottomWidth: "{spacing.px}",
+			borderBottomColor: "var(--colors-border-primary)",
+			borderBottomStyle: "solid",
+			borderRadius: 0,
 			display: "flex",
 			flexDirection: "column",
 			"&[data-state=open]": {
@@ -14,6 +15,9 @@ export const accordionCustomItemRecipe = defineSlotRecipe({
 			},
 			"&[data-state=closed]": {
 				flex: "0 0 auto"
+			},
+			"&:last-child": {
+				borderBottomWidth: 0
 			}
 		},
 		itemTrigger: {
@@ -31,7 +35,7 @@ export const accordionCustomItemRecipe = defineSlotRecipe({
 			maxHeight: "100%",
 			display: "flex",
 			flexDirection: "column",
-			padding:"0"
+			padding: "0"
 		},
 		itemBody: {
 			display: "flex",

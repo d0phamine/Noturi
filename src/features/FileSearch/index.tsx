@@ -1,7 +1,6 @@
 import { FC } from "react"
 
 import {
-	explorerFooterRecipe,
 	explorerHeaderRecipe,
 	explorerRecipe
 } from "@/features/Explorer/style"
@@ -16,10 +15,6 @@ export const FileSearch: FC = () => {
 				<p>fileSearch</p>
 			</div>
 			<div data-component="fileSearch-content"></div>
-			<div
-				data-component="fileSearch-footer"
-				className={explorerFooterRecipe()}
-			></div>
 		</div>
 	)
 }

@@ -28,7 +28,6 @@ export const MainPage: FC = observer(() => {
 				{controlPanelActiveEl ? (
 					<Splitter.Root
 						panels={[{ id: "leftExplorer" }, { id: "rightWindow" }]}
-						borderWidth="1px"
 						defaultSize={[30, 70]}
 						css={splitterStyle.root}
 					>

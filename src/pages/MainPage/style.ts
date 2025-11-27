@@ -19,10 +19,14 @@ export const mainPageSplitterRecipe = defineSlotRecipe({
 	slots: ["root", "panel", "resizeTrigger", "resizeTriggerSeparator"],
 
 	base: {
+		root: {
+			borderWidth: 0
+		},
 		resizeTriggerSeparator: {
 			bg: "border.primary"
 		},
 		resizeTrigger: {
+			width: "{spacing.px}",
 			_dragging: {
 				transition: "0.3s",
 				bg: "{colors.primary.300}",
