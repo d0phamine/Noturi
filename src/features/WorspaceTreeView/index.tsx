@@ -6,6 +6,8 @@ import { observer } from "mobx-react-lite"
 import { useStores } from "@/store"
 import { FileTree } from "@/store/FsStore"
 
+import { isFileTreeMetadata } from "@/utils/typeguards"
+
 import {
 	ChevronExplorerIcon,
 	ExplorerFileIcon,
@@ -68,9 +70,10 @@ export const WorkspaceTreeView: FC = observer(() => {
 			clickAction="EXCLUSIVE_SELECT"
 			multiSelect
 			className={workspaceTreeViewRecipe()}
-			onNodeSelect={(e) =>
-				FsStore.readFile(e.element.metadata?.path as string)
-			}
+			onNodeSelect={(e) => {
+				const metadata = e.element.metadata
+				if (isFileTreeMetadata(metadata)) FsStore.readFile(metadata)
+			}}
 			nodeRenderer={({ element, isExpanded, getNodeProps, level }) => (
 				<div
 					{...getNodeProps()}

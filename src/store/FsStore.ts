@@ -5,11 +5,14 @@ import { open as openFs, readDir } from "@tauri-apps/plugin-fs"
 import { makeAutoObservable, runInAction } from "mobx"
 import { v4 as uuidv4 } from "uuid"
 
-export interface FileTree {
-	id: string
-	name: string
+export interface FileTreeMetadata {
 	path: string
 	isDirectory: boolean
+}
+
+export interface FileTree extends FileTreeMetadata {
+	id: string
+	name: string
 	children?: FileTree[]
 }
 
@@ -95,16 +98,18 @@ export class FsStore {
 		}
 	}
 
-	public readFile = async (path: string) => {
-		const file = await openFs(path, {
-			append: true,
-			write: true
-		})
-		const stat = await file.stat()
-		const buf = new Uint8Array(stat.size)
-		await file.read(buf)
-		const textContents = new TextDecoder().decode(buf)
-		console.log(textContents)
+	public readFile = async (fileMetadata: FileTreeMetadata) => {
+		if (!fileMetadata.isDirectory) {
+			const file = await openFs(fileMetadata.path, {
+				append: true,
+				write: true
+			})
+			const stat = await file.stat()
+			const buf = new Uint8Array(stat.size)
+			await file.read(buf)
+			const textContents = new TextDecoder().decode(buf)
+			console.log(textContents)
+		}
 	}
 }
 
