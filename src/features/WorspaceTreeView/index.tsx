@@ -44,7 +44,7 @@ const convertToTreeWithMetadata = (tree: FileTree[]): any[] => {
 }
 
 export const WorkspaceTreeView: FC = observer(() => {
-	const { FsStore } = useStores()
+	const { FsStore, WorkspaceStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
 
@@ -72,7 +72,10 @@ export const WorkspaceTreeView: FC = observer(() => {
 			className={workspaceTreeViewRecipe()}
 			onNodeSelect={(e) => {
 				const metadata = e.element.metadata
-				if (isFileTreeMetadata(metadata)) FsStore.readFile(metadata)
+				if (isFileTreeMetadata(metadata)) {
+					WorkspaceStore.addFileTab(e.element.name, metadata.path)
+					FsStore.readFile(metadata)
+				}
 			}}
 			nodeRenderer={({ element, isExpanded, getNodeProps, level }) => (
 				<div

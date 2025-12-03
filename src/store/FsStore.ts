@@ -108,7 +108,6 @@ export class FsStore {
 			const buf = new Uint8Array(stat.size)
 			await file.read(buf)
 			const textContents = new TextDecoder().decode(buf)
-			console.log(textContents)
 		}
 	}
 }

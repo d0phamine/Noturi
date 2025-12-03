@@ -5,7 +5,7 @@ import { cva } from "@/styles/panda/css"
 export const workspaceTabsContainerRecipe = cva({
 	base: {
 		height: "100%",
-        borderColor: "border.primary"
+		borderColor: "border.primary"
 	}
 })
 
@@ -15,13 +15,13 @@ export const workspaceTabsRecipe = defineSlotRecipe({
 	base: {
 		root: {
 			height: "{spacing.9}",
-            borderColor: "inherit",
+			borderColor: "inherit"
 		},
 		list: {
 			height: "{spacing.9}",
 			minHeight: "unset",
 			width: "100%",
-            borderColor: "inherit",
+			borderColor: "inherit"
 		},
 		trigger: {
 			fontSize: "xs",
@@ -48,6 +48,14 @@ export const workspaceTabsListBorder = cva({
 		borderColor: "border.primary",
 		display: "flex",
 		flexGrow: 1
+	},
+	variants: {
+		bg: {
+			noTabs: {
+				bg: "bg.primary",
+				border: 0
+			}
+		}
 	}
 })
 
