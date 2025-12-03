@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx"
 import { v4 as uuidv4 } from "uuid"
 
+import { FileTreeMetadata } from "@/store/FsStore"
+
 export type FileTabDataType = {
 	id: string
 	name: string
@@ -22,14 +24,16 @@ export class WorkspaceStore {
 		makeAutoObservable(this)
 	}
 
-	public addFileTab = (name: string, path: string) => {
-		const modData: FileTabDataType = {
-			id: uuidv4(),
-			name: name,
-			path: path
+	public addFileTab = (name: string, metadata: FileTreeMetadata) => {
+		if (!metadata.isDirectory) {
+			const modData: FileTabDataType = {
+				id: uuidv4(),
+				name: name,
+				path: metadata.path
+			}
+			this.WorkspaceStoreData.fileTabs?.push(modData)
+			this.setActiveFileTab(modData.id)
 		}
-		this.WorkspaceStoreData.fileTabs?.push(modData)
-		this.setActiveFileTab(modData.id)
 	}
 
 	public setActiveFileTab = (value: string) => {

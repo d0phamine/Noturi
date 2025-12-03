@@ -73,7 +73,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 			onNodeSelect={(e) => {
 				const metadata = e.element.metadata
 				if (isFileTreeMetadata(metadata)) {
-					WorkspaceStore.addFileTab(e.element.name, metadata.path)
+					WorkspaceStore.addFileTab(e.element.name, metadata)
 					FsStore.readFile(metadata)
 				}
 			}}
