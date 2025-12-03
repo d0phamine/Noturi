@@ -26,7 +26,7 @@ export const mainPageSplitterRecipe = defineSlotRecipe({
 			bg: "border.primary"
 		},
 		resizeTrigger: {
-			width: "{spacing.px}",
+			zIndex: "{zIndex.sticky}",
 			_dragging: {
 				transition: "0.3s",
 				bg: "{colors.primary.300}",
