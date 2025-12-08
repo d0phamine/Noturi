@@ -1,4 +1,4 @@
-import { FC } from "react"
+import { FC, useEffect, useRef } from "react"
 import TreeView, { INode, flattenTree } from "react-accessible-treeview"
 
 import { observer } from "mobx-react-lite"
@@ -47,6 +47,9 @@ export const WorkspaceTreeView: FC = observer(() => {
 	const { FsStore, WorkspaceStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
+	const { activeFileTab } = WorkspaceStore.WorkspaceStoreData
+
+	const activeWorkspaceTreeViewElemRef = useRef<HTMLDivElement>(null)
 
 	const convertedChildren = selectedFileTree
 		? convertToTreeWithMetadata(selectedFileTree)
@@ -61,6 +64,16 @@ export const WorkspaceTreeView: FC = observer(() => {
 	}
 
 	const data = flattenTree<FileMetadata>(rootNode) as FileTreeNode[]
+
+	useEffect(() => {
+		if (activeWorkspaceTreeViewElemRef.current) {
+			activeWorkspaceTreeViewElemRef.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+				inline: "nearest"
+			})
+		}
+	}, [activeFileTab])
 
 	return (
 		<TreeView
@@ -87,6 +100,12 @@ export const WorkspaceTreeView: FC = observer(() => {
 					className={workspaceTreeViewElemRecipe({
 						level: getLimitedLevel(level)
 					})}
+					aria-selected={activeFileTab === element.id}
+					ref={
+						activeFileTab === element.id
+							? activeWorkspaceTreeViewElemRef
+							: null
+					}
 				>
 					{element.metadata?.isDirectory ? (
 						<ChevronExplorerIcon isOpen={isExpanded} />

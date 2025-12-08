@@ -1,6 +1,6 @@
 import { Box, CloseButton, Tabs, useSlotRecipe } from "@chakra-ui/react"
 
-import { FC, useState } from "react"
+import { FC, useEffect, useRef, useState } from "react"
 
 import { observer } from "mobx-react-lite"
 
@@ -18,10 +18,22 @@ export const WorkSpaceTabs: FC = observer(() => {
 	const { WorkspaceStore } = useStores()
 	const tabsRecipe = useSlotRecipe({ recipe: workspaceTabsRecipe })
 	const tabsStyles = tabsRecipe()
+	const activeTabRef = useRef<HTMLButtonElement>(null)
 
 	const { fileTabs, activeFileTab } = WorkspaceStore.WorkspaceStoreData
 
 	const [hoveredTabId, setHoveredTabId] = useState<string | null>(null)
+
+	useEffect(() => {
+		console.log(activeTabRef.current)
+		if (activeTabRef.current) {
+			activeTabRef.current?.scrollIntoView({
+				behavior: "smooth",
+				block: "center",
+				inline: "nearest"
+			})
+		}
+	}, [activeFileTab])
 
 	return (
 		<div
@@ -43,6 +55,7 @@ export const WorkSpaceTabs: FC = observer(() => {
 							key={tab.id}
 							onMouseEnter={() => setHoveredTabId(tab.id)}
 							onMouseLeave={() => setHoveredTabId(null)}
+							ref={activeFileTab === tab.id ? activeTabRef : null}
 						>
 							<Box css={tabsStyles.iconholder}>
 								<ExplorerFileIcon fileName={tab.name} />

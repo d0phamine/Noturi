@@ -13,6 +13,7 @@ export const workspaceTreeViewElemRecipe = cva({
 		flexDirection: "row",
 		alignItems: "center",
 		gap: "{spacing.px}",
+		cursor:"pointer",
 		_hover: {
 			bg: "bg.secondary"
 		},
