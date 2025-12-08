@@ -1,4 +1,5 @@
-use tauri::{ WebviewUrl, WebviewWindowBuilder };
+use tauri::{ WebviewUrl, WebviewWindowBuilder, TitleBarStyle, Theme };
+use tauri::window::Color;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -37,8 +38,9 @@ pub fn run() {
 				}
 			}
 
+			let window_clone = window.clone();
 			window.on_window_event(move |event| {
-				if let tauri::WindowEvent::ThemeChanged(_theme) = event {
+				if let tauri::WindowEvent::ThemeChanged(theme) = event {
 					#[cfg(target_os = "macos")]
 					{
 						let color = match theme {
