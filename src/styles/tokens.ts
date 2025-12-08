@@ -21,7 +21,9 @@ export const themeTokens = {
 			500: { value: "#718096" },
 			600: { value: "#4A5568" },
 			700: { value: "#2D3748" },
+			750: { value: "#293242" },
 			800: { value: "#1A202C" },
+			850: { value: "#1C1E2C" },
 			900: { value: "#171924" }
 		},
 		black: {
@@ -232,6 +234,11 @@ export const semanticTokens = {
 					_dark: "{colors.gray.900}"
 				}
 			},
+			subAccent: {
+				value: {
+					_dark: "{colors.gray.850}"
+				}
+			},
 			primary: {
 				value: {
 					base: "{colors.gray.50}",
@@ -241,7 +248,7 @@ export const semanticTokens = {
 			secondary: {
 				value: {
 					base: "{colors.gray.50}",
-					_dark: "{colors.gray.700}"
+					_dark: "{colors.gray.750}"
 				}
 			},
 			tertiary: {

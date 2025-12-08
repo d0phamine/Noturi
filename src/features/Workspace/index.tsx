@@ -2,8 +2,6 @@ import { FC } from "react"
 
 import { observer } from "mobx-react-lite"
 
-import { useStores } from "@/store"
-
 import { WorkSpaceTabs } from "@/components"
 
 import { workspaceHeaderRecipe, workspaceRecipe } from "./style"

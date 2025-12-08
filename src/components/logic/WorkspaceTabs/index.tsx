@@ -1,11 +1,12 @@
-import { Tabs, useSlotRecipe } from "@chakra-ui/react"
-import { CloseButton } from "@chakra-ui/react"
+import { Box, CloseButton, Tabs, useSlotRecipe } from "@chakra-ui/react"
 
-import { FC } from "react"
+import { FC, useState } from "react"
 
 import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
+
+import { ExplorerFileIcon } from "@/components"
 
 import {
 	workspaceTabsContainerRecipe,
@@ -20,7 +21,7 @@ export const WorkSpaceTabs: FC = observer(() => {
 
 	const { fileTabs, activeFileTab } = WorkspaceStore.WorkspaceStoreData
 
-	console.log(fileTabs)
+	const [hoveredTabId, setHoveredTabId] = useState<string | null>(null)
 
 	return (
 		<div
@@ -40,9 +41,15 @@ export const WorkSpaceTabs: FC = observer(() => {
 							value={tab.id}
 							css={tabsStyles.trigger}
 							key={tab.id}
+							onMouseEnter={() => setHoveredTabId(tab.id)}
+							onMouseLeave={() => setHoveredTabId(null)}
 						>
+							<Box css={tabsStyles.iconholder}>
+								<ExplorerFileIcon fileName={tab.name} />
+							</Box>
 							{tab.name}
-							{activeFileTab === tab.id ? (
+							{hoveredTabId === tab.id ||
+							activeFileTab === tab.id ? (
 								<CloseButton
 									as="span"
 									role="button"
@@ -53,7 +60,9 @@ export const WorkSpaceTabs: FC = observer(() => {
 										WorkspaceStore.deleteFileTab(tab.id)
 									}}
 								/>
-							) : null}
+							) : (
+								<Box css={tabsStyles.placeholder} />
+							)}
 						</Tabs.Trigger>
 					))}
 					<div
