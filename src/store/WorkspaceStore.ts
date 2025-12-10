@@ -10,13 +10,17 @@ export type FileTabDataType = {
 
 export interface IWorkspaceStore {
 	fileTabs: FileTabDataType[]
-	activeFileTab: string
+	activeFileTabId: string
+	selectedWorkspaceIds: string[]
+	expandedWorkspaceIds: string[]
 }
 
 export class WorkspaceStore {
 	public WorkspaceStoreData: IWorkspaceStore = {
 		fileTabs: [],
-		activeFileTab: ""
+		activeFileTabId: "",
+		selectedWorkspaceIds: [],
+		expandedWorkspaceIds: []
 	}
 
 	constructor() {
@@ -39,12 +43,12 @@ export class WorkspaceStore {
 			)
 				this.WorkspaceStoreData.fileTabs?.push(modData)
 
-			this.setActiveFileTab(modData.id)
+			this.setActiveFileTabId(modData.id)
 		}
 	}
 
-	public setActiveFileTab = (value: string) => {
-		this.WorkspaceStoreData.activeFileTab = value
+	public setActiveFileTabId = (value: string) => {
+		this.WorkspaceStoreData.activeFileTabId = value
 	}
 
 	public deleteFileTab = (tabId: string) => {
@@ -52,6 +56,26 @@ export class WorkspaceStore {
 			this.WorkspaceStoreData.fileTabs.filter(
 				(value) => value.id !== tabId
 			)
+	}
+
+	public setExpandedWorkspaceIds = (id: string, isExpanded: boolean) => {
+		const newSet = new Set(this.WorkspaceStoreData.expandedWorkspaceIds)
+
+		if (isExpanded) {
+			newSet.add(id)
+		} else {
+			newSet.delete(id)
+		}
+
+		this.WorkspaceStoreData.expandedWorkspaceIds = Array.from(newSet)
+	}
+
+	public expandWorkspaceAncestors = (ancestorIds: string[]) => {
+		const newSet = new Set([
+			...this.WorkspaceStoreData.expandedWorkspaceIds,
+			...ancestorIds
+		])
+		this.WorkspaceStoreData.expandedWorkspaceIds = Array.from(newSet)
 	}
 }
 

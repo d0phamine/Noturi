@@ -20,12 +20,11 @@ export const WorkSpaceTabs: FC = observer(() => {
 	const tabsStyles = tabsRecipe()
 	const activeTabRef = useRef<HTMLButtonElement>(null)
 
-	const { fileTabs, activeFileTab } = WorkspaceStore.WorkspaceStoreData
+	const { fileTabs, activeFileTabId } = WorkspaceStore.WorkspaceStoreData
 
 	const [hoveredTabId, setHoveredTabId] = useState<string | null>(null)
 
 	useEffect(() => {
-		console.log(activeTabRef.current)
 		if (activeTabRef.current) {
 			activeTabRef.current?.scrollIntoView({
 				behavior: "smooth",
@@ -33,7 +32,7 @@ export const WorkSpaceTabs: FC = observer(() => {
 				inline: "nearest"
 			})
 		}
-	}, [activeFileTab])
+	}, [activeFileTabId])
 
 	return (
 		<div
@@ -44,8 +43,10 @@ export const WorkSpaceTabs: FC = observer(() => {
 				defaultValue="members"
 				variant="plain"
 				css={tabsStyles.root}
-				value={activeFileTab}
-				onValueChange={(e) => WorkspaceStore.setActiveFileTab(e.value)}
+				value={activeFileTabId}
+				onValueChange={(e) =>
+					WorkspaceStore.setActiveFileTabId(e.value)
+				}
 			>
 				<Tabs.List css={tabsStyles.list}>
 					{fileTabs?.map((tab) => (
@@ -55,14 +56,16 @@ export const WorkSpaceTabs: FC = observer(() => {
 							key={tab.id}
 							onMouseEnter={() => setHoveredTabId(tab.id)}
 							onMouseLeave={() => setHoveredTabId(null)}
-							ref={activeFileTab === tab.id ? activeTabRef : null}
+							ref={
+								activeFileTabId === tab.id ? activeTabRef : null
+							}
 						>
 							<Box css={tabsStyles.iconholder}>
 								<ExplorerFileIcon fileName={tab.name} />
 							</Box>
 							{tab.name}
 							{hoveredTabId === tab.id ||
-							activeFileTab === tab.id ? (
+							activeFileTabId === tab.id ? (
 								<CloseButton
 									as="span"
 									role="button"
