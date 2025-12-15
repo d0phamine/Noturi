@@ -7,6 +7,7 @@ export type FileTabDataType = {
 	name: string
 	path: string
 	content: string
+	originalContent: string
 	changed: boolean
 }
 
@@ -40,6 +41,7 @@ export class WorkspaceStore {
 				id: id,
 				name: name,
 				path: metadata.path,
+				originalContent: content,
 				content: content,
 				changed: false
 			}
@@ -83,12 +85,18 @@ export class WorkspaceStore {
 		this.WorkspaceStoreData.expandedWorkspaceIds = Array.from(newSet)
 	}
 
-	public setFileChanged = (changed: boolean = true) => {
+	public setFileChanged = (newContent: string) => {
 		this.WorkspaceStoreData.fileTabs = this.WorkspaceStoreData.fileTabs.map(
-			(tab) =>
-				tab.id === this.WorkspaceStoreData.activeFileTabId
-					? { ...tab, changed }
-					: tab
+			(tab) => {
+				if (tab.id === this.WorkspaceStoreData.activeFileTabId) {
+					return {
+						...tab,
+						content: newContent,
+						changed: tab.originalContent !== newContent
+					}
+				}
+				return tab
+			}
 		)
 	}
 }

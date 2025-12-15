@@ -3,3 +3,4 @@ export * from "./logic/WorkspaceTabs"
 
 export * from "./ui/ExplorerFileIcon"
 export * from "./ui/ExplorerFolderIcon"
+export * from "./ui/TabIcon"

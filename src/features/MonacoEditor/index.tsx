@@ -23,13 +23,16 @@ export const MonacoEditor: FC = observer(() => {
 		<div style={{ height: "100%" }}>
 			{fileTabs.length ? (
 				<Editor
+					key={activeFile?.id}
 					height="100%"
 					theme="vs-dark"
-					defaultValue={activeFile?.content}
+					value={activeFile?.content}
 					language="typescript"
 					path={activeFile?.path}
 					onMount={(editor) => (editorRef.current = editor)}
-					onChange={(newContent) => WorkspaceStore.setFileChanged()}
+					onChange={(newContent) =>
+						WorkspaceStore.setFileChanged(newContent ?? "")
+					}
 				/>
 			) : null}
 		</div>

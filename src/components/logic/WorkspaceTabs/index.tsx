@@ -6,7 +6,7 @@ import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
 
-import { ExplorerFileIcon } from "@/components"
+import { ExplorerFileIcon, TabIcon } from "@/components"
 
 import {
 	workspaceTabsContainerRecipe,
@@ -15,7 +15,7 @@ import {
 } from "./style"
 
 export const WorkSpaceTabs: FC = observer(() => {
-	const { WorkspaceStore } = useStores()
+	const { WorkspaceStore, FsStore } = useStores()
 	const tabsRecipe = useSlotRecipe({ recipe: workspaceTabsRecipe })
 	const tabsStyles = tabsRecipe()
 	const activeTabRef = useRef<HTMLButtonElement>(null)
@@ -66,14 +66,15 @@ export const WorkSpaceTabs: FC = observer(() => {
 							{tab.name}
 							{hoveredTabId === tab.id ||
 							activeFileTabId === tab.id ? (
-								<CloseButton
-									as="span"
-									role="button"
-									size="2xs"
-									me="-2"
+								<TabIcon
+									type={tab.changed ? "unsaved" : "close"}
 									onClick={(e) => {
 										e.stopPropagation()
-										WorkspaceStore.deleteFileTab(tab.id)
+										tab.changed
+											? console.log("changed")
+											: WorkspaceStore.deleteFileTab(
+													tab.id
+												)
 									}}
 								/>
 							) : (
