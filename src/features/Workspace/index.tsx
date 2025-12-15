@@ -1,3 +1,5 @@
+import { MonacoEditor } from "@/features"
+
 import { FC } from "react"
 
 import { observer } from "mobx-react-lite"
@@ -15,7 +17,9 @@ export const WorkSpace: FC = observer(() => {
 			>
 				<WorkSpaceTabs />
 			</div>
-			<div data-component="workspace-content"></div>
+			<div data-component="workspace-content">
+				<MonacoEditor />
+			</div>
 		</div>
 	)
 })

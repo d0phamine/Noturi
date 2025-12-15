@@ -47,7 +47,8 @@ export const WorkspaceTreeView: FC = observer(() => {
 	const { FsStore, WorkspaceStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
-	const { activeFileTabId, expandedWorkspaceIds } = WorkspaceStore.WorkspaceStoreData
+	const { activeFileTabId, expandedWorkspaceIds } =
+		WorkspaceStore.WorkspaceStoreData
 
 	const activeWorkspaceTreeViewElemRef = useRef<HTMLDivElement>(null)
 
@@ -113,7 +114,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 			expandedIds={expandedWorkspaceIds}
 			multiSelect
 			className={workspaceTreeViewRecipe()}
-			onNodeSelect={(e) => {
+			onNodeSelect={async (e) => {
 				const { metadata, name, id } = e.element
 				const newSelectedIds = Array.from(
 					e.treeState?.selectedIds ?? []
@@ -122,17 +123,22 @@ export const WorkspaceTreeView: FC = observer(() => {
 					newSelectedIds.length === 1 &&
 					isFileTreeMetadata(metadata)
 				) {
-					WorkspaceStore.addFileTab(name, metadata, id as string)
-					FsStore.readFile(metadata)
+					const content = await FsStore.readFile(metadata)
+					WorkspaceStore.addFileTab(
+						name,
+						metadata,
+						id as string,
+						content || ""
+					)
 				}
 
 				console.log(newSelectedIds)
 			}}
 			onExpand={(props) => {
 				WorkspaceStore.setExpandedWorkspaceIds(
-                    props.element.id as string,
-                    props.isExpanded
-                )
+					props.element.id as string,
+					props.isExpanded
+				)
 			}}
 			nodeRenderer={({
 				element,

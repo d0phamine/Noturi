@@ -29,6 +29,14 @@
           "path": "**/*"
         }
       ]
+    },
+    {
+      "identifier": "fs:allow-open",
+      "allow": [
+        {
+          "path": "**/*"
+        }
+      ]
     }
   ]
 }

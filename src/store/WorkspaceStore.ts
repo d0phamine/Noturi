@@ -6,6 +6,8 @@ export type FileTabDataType = {
 	id: string
 	name: string
 	path: string
+	content: string
+	changed: boolean
 }
 
 export interface IWorkspaceStore {
@@ -30,13 +32,16 @@ export class WorkspaceStore {
 	public addFileTab = (
 		name: string,
 		metadata: FileTreeMetadata,
-		id: string
+		id: string,
+		content: string
 	) => {
 		if (!metadata.isDirectory) {
 			const modData: FileTabDataType = {
 				id: id,
 				name: name,
-				path: metadata.path
+				path: metadata.path,
+				content: content,
+				changed: false
 			}
 			if (
 				!this.WorkspaceStoreData.fileTabs.some((item) => item.id === id)
@@ -76,6 +81,15 @@ export class WorkspaceStore {
 			...ancestorIds
 		])
 		this.WorkspaceStoreData.expandedWorkspaceIds = Array.from(newSet)
+	}
+
+	public setFileChanged = (changed: boolean = true) => {
+		this.WorkspaceStoreData.fileTabs = this.WorkspaceStoreData.fileTabs.map(
+			(tab) =>
+				tab.id === this.WorkspaceStoreData.activeFileTabId
+					? { ...tab, changed }
+					: tab
+		)
 	}
 }
 

@@ -1,6 +1,6 @@
 import { sortFileTreeByAlphabet } from "@/utils"
 import { open } from "@tauri-apps/plugin-dialog"
-import { open as openFs, readDir } from "@tauri-apps/plugin-fs"
+import { open as openFs, readDir, writeTextFile } from "@tauri-apps/plugin-fs"
 
 import { makeAutoObservable, runInAction } from "mobx"
 import { v4 as uuidv4 } from "uuid"
@@ -108,7 +108,12 @@ export class FsStore {
 			const buf = new Uint8Array(stat.size)
 			await file.read(buf)
 			const textContents = new TextDecoder().decode(buf)
+			return textContents
 		}
+	}
+
+	public writeFile = async (filePath: string, content: string) => {
+		await writeTextFile(filePath, content)
 	}
 }
 
