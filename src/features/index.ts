@@ -1,5 +1,5 @@
 export * from "./ControlPanel"
 export * from "./Explorer"
 export * from "./FileSearch"
-export * from "./WorspaceTreeView"
+export * from "./WorkspaceTreeView"
 export * from "./Workspace"
