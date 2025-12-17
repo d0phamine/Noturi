@@ -27,7 +27,6 @@ export const MonacoEditor: FC = observer(() => {
 					height="100%"
 					theme="vs-dark"
 					value={activeFile?.content}
-					language="typescript"
 					path={activeFile?.path}
 					onMount={(editor) => (editorRef.current = editor)}
 					onChange={(newContent) =>

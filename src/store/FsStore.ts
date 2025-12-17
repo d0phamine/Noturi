@@ -113,6 +113,7 @@ export class FsStore {
 	}
 
 	public writeFile = async (filePath: string, content: string) => {
+		console.log(filePath, "saving file")
 		await writeTextFile(filePath, content)
 	}
 }

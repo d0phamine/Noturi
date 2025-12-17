@@ -99,5 +99,19 @@ export class WorkspaceStore {
 			}
 		)
 	}
+
+	public setFileUnсhanged = () => {
+		this.WorkspaceStoreData.fileTabs = this.WorkspaceStoreData.fileTabs.map(
+			(tab) => {
+				if (tab.id === this.WorkspaceStoreData.activeFileTabId) {
+					return {
+						...tab,
+						changed: false
+					}
+				}
+				return tab
+			}
+		)
+	}
 }
 

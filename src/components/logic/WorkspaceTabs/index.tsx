@@ -1,10 +1,11 @@
-import { Box, CloseButton, Tabs, useSlotRecipe } from "@chakra-ui/react"
+import { Box, Tabs, useSlotRecipe } from "@chakra-ui/react"
 
 import { FC, useEffect, useRef, useState } from "react"
 
 import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
+import { FileTabDataType } from "@/store/WorkspaceStore"
 
 import { ExplorerFileIcon, TabIcon } from "@/components"
 
@@ -33,6 +34,22 @@ export const WorkSpaceTabs: FC = observer(() => {
 			})
 		}
 	}, [activeFileTabId])
+
+	const tabIconHandler = (
+		e: React.MouseEvent<Element, MouseEvent>,
+		tab: FileTabDataType
+	) => {
+		e.stopPropagation()
+		tab.changed
+			? FsStore.writeFile(tab.path, tab.content)
+					.then(() => {
+						WorkspaceStore.setFileUnсhanged()
+					})
+					.catch((error) => {
+						console.error("File save error", error)
+					})
+			: WorkspaceStore.deleteFileTab(tab.id)
+	}
 
 	return (
 		<div
@@ -68,14 +85,7 @@ export const WorkSpaceTabs: FC = observer(() => {
 							activeFileTabId === tab.id ? (
 								<TabIcon
 									type={tab.changed ? "unsaved" : "close"}
-									onClick={(e) => {
-										e.stopPropagation()
-										tab.changed
-											? console.log("changed")
-											: WorkspaceStore.deleteFileTab(
-													tab.id
-												)
-									}}
+									onClick={(e) => tabIconHandler(e, tab)}
 								/>
 							) : (
 								<Box css={tabsStyles.placeholder} />
