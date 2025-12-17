@@ -98,6 +98,12 @@ export class FsStore {
 		}
 	}
 
+	/**
+	 * Function for reading file
+	 * @param {FileTreeMetadata} fileMetadata - file metadata
+	 * @public
+	 */
+
 	public readFile = async (fileMetadata: FileTreeMetadata) => {
 		if (!fileMetadata.isDirectory) {
 			const file = await openFs(fileMetadata.path, {
@@ -111,6 +117,13 @@ export class FsStore {
 			return textContents
 		}
 	}
+
+	/**
+	 * Function for writing file
+	 * @param {string} filePath - path to file
+	 * @param {string} content - file content
+	 * @public
+	 */
 
 	public writeFile = async (filePath: string, content: string) => {
 		console.log(filePath, "saving file")

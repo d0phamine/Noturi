@@ -7,7 +7,7 @@ import { observer } from "mobx-react-lite"
 import { useStores } from "@/store"
 import { FileTabDataType } from "@/store/WorkspaceStore"
 
-import { ExplorerFileIcon, TabIcon } from "@/components"
+import { ExplorerFileIcon, SimpleDialog, TabIcon } from "@/components"
 
 import {
 	workspaceTabsContainerRecipe,
@@ -40,15 +40,18 @@ export const WorkSpaceTabs: FC = observer(() => {
 		tab: FileTabDataType
 	) => {
 		e.stopPropagation()
-		tab.changed
-			? FsStore.writeFile(tab.path, tab.content)
-					.then(() => {
-						WorkspaceStore.setFileUnсhanged()
-					})
-					.catch((error) => {
-						console.error("File save error", error)
-					})
-			: WorkspaceStore.deleteFileTab(tab.id)
+		!tab.changed ? WorkspaceStore.deleteFileTab(tab.id) : null
+	}
+
+	const onSaveHandler = (tab: FileTabDataType) => {
+		FsStore.writeFile(tab.path, tab.content)
+			.then(() => {
+				WorkspaceStore.setFileUnсhanged()
+			})
+			.catch((error) => {
+				console.error("File save error", error)
+			})
+		WorkspaceStore.deleteFileTab(tab.id)
 	}
 
 	return (
@@ -83,10 +86,31 @@ export const WorkSpaceTabs: FC = observer(() => {
 							{tab.name}
 							{hoveredTabId === tab.id ||
 							activeFileTabId === tab.id ? (
-								<TabIcon
-									type={tab.changed ? "unsaved" : "close"}
-									onClick={(e) => tabIconHandler(e, tab)}
-								/>
+								<SimpleDialog
+									onApprove={() => onSaveHandler(tab)}
+									onCancel={() =>
+										WorkspaceStore.deleteFileTab(tab.id)
+									}
+									title="Do you want to save the changes you made?"
+									approveText="save"
+									cancelText="no"
+								>
+									<SimpleDialog.Trigger>
+										<TabIcon
+											type={
+												tab.changed
+													? "unsaved"
+													: "close"
+											}
+											onClick={(e) =>
+												tabIconHandler(e, tab)
+											}
+										/>
+									</SimpleDialog.Trigger>
+									<SimpleDialog.Content>
+										<p>123123</p>
+									</SimpleDialog.Content>
+								</SimpleDialog>
 							) : (
 								<Box css={tabsStyles.placeholder} />
 							)}
