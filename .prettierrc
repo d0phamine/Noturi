@@ -15,6 +15,7 @@
 		"^[a-zA-Z]",
 		"^@/assets",
 		"^@/styles",
+		"^@/themes",
 		"^@/types",
 		"^@/api",
 		"^@/services",
