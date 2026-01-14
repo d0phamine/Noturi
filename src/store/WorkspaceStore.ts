@@ -63,7 +63,10 @@ export class WorkspaceStore {
 			this.WorkspaceStoreData.fileTabs.filter(
 				(value) => value.id !== tabId
 			)
-		if (this.WorkspaceStoreData.fileTabs.length != 0) {
+		if (
+			this.WorkspaceStoreData.fileTabs.length != 0 &&
+			this.WorkspaceStoreData.activeFileTabId === tabId
+		) {
 			this.setActiveFileTabId(
 				this.WorkspaceStoreData.fileTabs[
 					this.WorkspaceStoreData.fileTabs.length - 1
