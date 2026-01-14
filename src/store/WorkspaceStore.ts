@@ -1,4 +1,4 @@
-import { makeAutoObservable } from "mobx"
+import { makeAutoObservable, remove } from "mobx"
 
 import { FileTreeMetadata } from "@/store/FsStore"
 
@@ -63,6 +63,13 @@ export class WorkspaceStore {
 			this.WorkspaceStoreData.fileTabs.filter(
 				(value) => value.id !== tabId
 			)
+		if (this.WorkspaceStoreData.fileTabs.length != 0) {
+			this.setActiveFileTabId(
+				this.WorkspaceStoreData.fileTabs[
+					this.WorkspaceStoreData.fileTabs.length - 1
+				].id
+			)
+		}
 	}
 
 	public setExpandedWorkspaceIds = (id: string, isExpanded: boolean) => {
