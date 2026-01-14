@@ -4,7 +4,7 @@ import { FC } from "react"
 
 import { observer } from "mobx-react-lite"
 
-import { WorkSpaceTabs } from "@/components"
+import { WorkspaceAdditions, WorkspaceTabs } from "@/components"
 
 import { workspaceHeaderRecipe, workspaceRecipe } from "./style"
 
@@ -15,7 +15,8 @@ export const WorkSpace: FC = observer(() => {
 				data-component="workspace-header"
 				className={workspaceHeaderRecipe()}
 			>
-				<WorkSpaceTabs />
+				<WorkspaceTabs />
+				<WorkspaceAdditions />
 			</div>
 			<div data-component="workspace-content">
 				<MonacoEditor />

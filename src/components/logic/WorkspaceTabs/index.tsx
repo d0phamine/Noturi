@@ -15,7 +15,7 @@ import {
 	workspaceTabsRecipe
 } from "./style"
 
-export const WorkSpaceTabs: FC = observer(() => {
+export const WorkspaceTabs: FC = observer(() => {
 	const { WorkspaceStore, FsStore } = useStores()
 	const tabsRecipe = useSlotRecipe({ recipe: workspaceTabsRecipe })
 	const tabsStyles = tabsRecipe()

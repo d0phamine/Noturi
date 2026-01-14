@@ -7,13 +7,16 @@ export const workspaceRecipe = cva({
 		height: "100%",
 		overflow: "hidden",
 		display: "grid",
-		gridTemplateRows: "{spacing.9} 1fr"
+		gridTemplateRows: "{spacing.9} 1fr",
+		margin: "unset"
 	}
 })
 
 export const workspaceHeaderRecipe = cva({
 	base: {
-		overflow: "hidden"
+		overflow: "hidden",
+		display: "flex",
+		flexDirection: "row",
 	}
 })
 

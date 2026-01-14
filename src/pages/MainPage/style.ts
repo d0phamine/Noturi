@@ -35,6 +35,9 @@ export const mainPageSplitterRecipe = defineSlotRecipe({
 					bg: "transparent"
 				}
 			}
+		},
+		panel: {
+			overflow: "hidden"
 		}
 	}
 })
