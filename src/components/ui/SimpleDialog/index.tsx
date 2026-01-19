@@ -19,6 +19,7 @@ interface ISimpleDialogProps {
 	approveText: string
 	cancelText: string
 	children: ReactNode
+	titleIcon?: ReactNode
 }
 
 interface ISimpleDialogTriggerProps {
@@ -41,8 +42,15 @@ SimpleDialogContent.displayName = "SimpleDialogContent"
 
 const SimpleDialogRoot: FC<ISimpleDialogProps> = (props) => {
 	const [open, setOpen] = useState(false)
-	const { onApprove, onCancel, title, approveText, cancelText, children } =
-		props
+	const {
+		onApprove,
+		onCancel,
+		title,
+		approveText,
+		cancelText,
+		children,
+		titleIcon
+	} = props
 
 	const childrenArray = Children.toArray(children) as ReactElement[]
 
@@ -72,23 +80,16 @@ const SimpleDialogRoot: FC<ISimpleDialogProps> = (props) => {
 				<Dialog.Positioner>
 					<Dialog.Content css={dialogStyles.content}>
 						<Dialog.Header css={dialogStyles.header}>
+							{titleIcon}
 							<Dialog.Title>{title}</Dialog.Title>
 						</Dialog.Header>
 						<Dialog.Body css={dialogStyles.body}>
 							{dialogContent}
 						</Dialog.Body>
 						<Dialog.Footer css={dialogStyles.footer}>
-							<Dialog.ActionTrigger
-								asChild
-								css={dialogStyles.actionTrigger}
-							>
-								<Button
-									onClick={onCancel}
-									size="2xs"
-								>
-									{cancelText}
-								</Button>
-							</Dialog.ActionTrigger>
+							<Button onClick={onCancel} size="2xs">
+								{cancelText}
+							</Button>
 							<Button onClick={onApprove} size="2xs">
 								{approveText}
 							</Button>

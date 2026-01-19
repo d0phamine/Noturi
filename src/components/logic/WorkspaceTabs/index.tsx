@@ -2,6 +2,7 @@ import { Box, Tabs, useSlotRecipe } from "@chakra-ui/react"
 
 import { FC, useEffect, useRef, useState } from "react"
 
+import { TriangleAlert } from "lucide-react"
 import { observer } from "mobx-react-lite"
 
 import { useStores } from "@/store"
@@ -94,6 +95,7 @@ export const WorkspaceTabs: FC = observer(() => {
 									title="Do you want to save the changes you made?"
 									approveText="save"
 									cancelText="no"
+									titleIcon={<TriangleAlert />}
 								>
 									<SimpleDialog.Trigger>
 										<TabIcon
@@ -108,7 +110,7 @@ export const WorkspaceTabs: FC = observer(() => {
 										/>
 									</SimpleDialog.Trigger>
 									<SimpleDialog.Content>
-										<p>123123</p>
+										<p>Your changes will be lost if you don't save them.</p>
 									</SimpleDialog.Content>
 								</SimpleDialog>
 							) : (

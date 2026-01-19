@@ -17,6 +17,7 @@ export const workspaceRecipe = cva({
 export const workspaceHeaderRecipe = cva({
 	base: {
 		overflow: "hidden",
+		width: "100%",
 		display: "flex",
 		flexDirection: "row"
 	}
