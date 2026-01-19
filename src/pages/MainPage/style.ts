@@ -20,7 +20,9 @@ export const mainPageSplitterRecipe = defineSlotRecipe({
 
 	base: {
 		root: {
-			borderWidth: 0
+			borderWidth: 0,
+			width: "100%",
+			overflow: "hidden"
 		},
 		resizeTriggerSeparator: {
 			bg: "border.primary"
@@ -37,7 +39,10 @@ export const mainPageSplitterRecipe = defineSlotRecipe({
 			}
 		},
 		panel: {
-			overflow: "hidden"
+			overflow: "hidden",
+			minWidth: 0, // Allow panels to shrink below their content size
+			width: "100%", // Ensure panels use available width
+			flexShrink: 1
 		}
 	}
 })

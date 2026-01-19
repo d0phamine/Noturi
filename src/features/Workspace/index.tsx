@@ -1,14 +1,15 @@
 import { MonacoEditor } from "@/features"
 
-import { FC } from "react"
+import { FC, useRef } from "react"
 
 import { observer } from "mobx-react-lite"
 
 import { WorkspaceAdditions, WorkspaceTabs } from "@/components"
 
-import { workspaceHeaderRecipe, workspaceRecipe } from "./style"
+import { workspaceHeaderRecipe, workspaceRecipe, workspaceContentRecipe } from "./style"
 
 export const WorkSpace: FC = observer(() => {
+	const contentRef = useRef<HTMLDivElement>(null)
 	return (
 		<div data-component="workspace" className={workspaceRecipe()}>
 			<div
@@ -18,7 +19,11 @@ export const WorkSpace: FC = observer(() => {
 				<WorkspaceTabs />
 				<WorkspaceAdditions />
 			</div>
-			<div data-component="workspace-content">
+			<div
+				data-component="workspace-content"
+				className={workspaceContentRecipe()}
+				ref={contentRef}
+			>
 				<MonacoEditor />
 			</div>
 		</div>

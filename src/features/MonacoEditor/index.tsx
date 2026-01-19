@@ -12,6 +12,8 @@ import { useStores } from "@/store"
 
 import { useColorMode } from "@/components/ui-chakra"
 
+import { monacoEditorContainerRecipe } from "./style"
+
 export const MonacoEditor: FC = observer(() => {
 	const { WorkspaceStore } = useStores()
 	const { colorMode } = useColorMode()
@@ -37,11 +39,10 @@ export const MonacoEditor: FC = observer(() => {
 	}, [activeFile])
 
 	return (
-		<div style={{ height: "100%" }}>
+		<div className={monacoEditorContainerRecipe()}>
 			{fileTabs.length ? (
 				<Editor
 					key={activeFile?.id}
-					height="100%"
 					theme={colorMode === "dark" ? "githubDark" : "githubLight"}
 					value={activeFile?.content}
 					path={activeFile?.path}
