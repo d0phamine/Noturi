@@ -6,7 +6,9 @@ export const workspaceTabsContainerRecipe = cva({
 	base: {
 		height: "100%",
 		borderColor: "border.primary",
-		flexGrow: "1"
+		flexGrow: "1",
+		flexBasis: "auto",
+		minWidth: 0
 	}
 })
 

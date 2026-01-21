@@ -5,6 +5,7 @@ export const workspaceAdditionsRecipe = cva({
 		display: "flex",
 		flexDirection: "row",
 		flexShrink: "0",
+		flexBasis: "auto",
 		gap: "{spacing.px}",
         alignItems: "center",
         padding: "{spacing.1}"
