@@ -196,7 +196,7 @@ interface FileIconMapping {
 	extension?: Record<string, IconComponent>
 }
 
-const fileIconMapping: FileIconMapping = {
+export const fileIconMapping: FileIconMapping = {
 	// Точные имена файлов
 	fileName: {
 		"package.json": NPM,

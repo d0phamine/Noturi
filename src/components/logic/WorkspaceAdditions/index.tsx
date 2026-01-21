@@ -3,22 +3,35 @@ import { IconButton } from "@chakra-ui/react"
 import { FC } from "react"
 
 import { Columns2, ScanEye } from "lucide-react"
+import { observer } from "mobx-react-lite"
+
+import { useStores } from "@/store"
+
+import { isMarkdownFile } from "@/utils/extensions"
 
 import { workspaceAdditionsRecipe } from "./style"
 
-export const WorkspaceAdditions: FC = () => {
+export const WorkspaceAdditions: FC = observer(() => {
+	const { WorkspaceStore } = useStores()
+
+	const { activeFileTabId, fileTabs } = WorkspaceStore.WorkspaceStoreData
+
+	const activeTab = fileTabs.find((tab) => tab.id === activeFileTabId)
+
 	return (
 		<div
 			data-component="workspace-additions"
 			className={workspaceAdditionsRecipe()}
 		>
-			<IconButton size={"2xs"} variant="ghost">
-				<ScanEye></ScanEye>
-			</IconButton>
+			{activeTab && isMarkdownFile(activeTab.name) ? (
+				<IconButton size={"2xs"} variant="ghost">
+					<ScanEye></ScanEye>
+				</IconButton>
+			) : null}
 			<IconButton size={"2xs"} variant="ghost">
 				<Columns2></Columns2>
 			</IconButton>
 		</div>
 	)
-}
+})
 
