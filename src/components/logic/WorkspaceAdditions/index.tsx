@@ -28,9 +28,11 @@ export const WorkspaceAdditions: FC = observer(() => {
 					<ScanEye></ScanEye>
 				</IconButton>
 			) : null}
-			<IconButton size={"2xs"} variant="ghost">
-				<Columns2></Columns2>
-			</IconButton>
+			{activeTab ? (
+				<IconButton size={"2xs"} variant="ghost">
+					<Columns2></Columns2>
+				</IconButton>
+			) : null}
 		</div>
 	)
 })
