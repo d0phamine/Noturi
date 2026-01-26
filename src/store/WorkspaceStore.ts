@@ -60,13 +60,29 @@ export class WorkspaceStore {
 		return this.activeWorkspace?.activeFileTabId || ""
 	}
 
-	public setActiveWorkspaceId = (workspaceId: string) => {
-		this.WorkspaceStoreData.activeWorkspaceId = workspaceId
+	public setActiveFileTabIdInWorkspace = (
+		workspaceId: string,
+		tabId: string
+	) => {
+		this.WorkspaceStoreData.workspaces =
+			this.WorkspaceStoreData.workspaces.map((ws) => {
+				if (ws.id === workspaceId) {
+					return {
+						...ws,
+						activeFileTabId: tabId
+					}
+				}
+				return ws
+			})
 	}
 
-	public setActiveFileTabId = (tabId: string) => {
-		this.WorkspaceStoreData.activeFileTabId = tabId
-	}
+	// public setActiveWorkspaceId = (workspaceId: string) => {
+	// 	this.WorkspaceStoreData.activeWorkspaceId = workspaceId
+	// }
+
+	// public setActiveFileTabId = (tabId: string) => {
+	// 	this.WorkspaceStoreData.activeFileTabId = tabId
+	// }
 
 	public addTabToWorkspace = (tab: FileTabDataType, workspaceId: string) => {
 		this.WorkspaceStoreData.workspaces =
@@ -97,15 +113,43 @@ export class WorkspaceStore {
 				changed: false
 			}
 
+			// Если нет рабочих пространств, создаем новое
 			if (!this.WorkspaceStoreData.workspaces.length) {
 				const newWorkspaceId = this.createWorkspace()
 				this.addTabToWorkspace(modData, newWorkspaceId)
-			} else if (!this.activeWorkspace?.tabs.includes(modData)) {
-				this.addTabToWorkspace(
-					modData,
-					this.WorkspaceStoreData.activeWorkspaceId
+
+				// Устанавливаем эту вкладку как активную в новом рабочем пространстве
+				const activeWs = this.WorkspaceStoreData.workspaces.find(
+					(ws) => ws.id === newWorkspaceId
 				)
-				this.setActiveFileTabId(modData.id)
+				if (activeWs) {
+					activeWs.activeFileTabId = modData.id
+				}
+			} else {
+				// Проверяем, существует ли уже вкладка с таким ID или путем в активном рабочем пространстве
+				const tabExists = this.activeWorkspace?.tabs.some(
+					(tab) => tab.id === modData.id || tab.path === modData.path
+				)
+
+				if (!tabExists && this.activeWorkspace) {
+					// Добавляем вкладку в активное рабочее пространство
+					this.addTabToWorkspace(
+						modData,
+						this.WorkspaceStoreData.activeWorkspaceId
+					)
+
+					// Устанавливаем эту вкладку как активную в рабочем пространстве
+					this.activeWorkspace.activeFileTabId = modData.id
+				} else if (this.activeWorkspace) {
+					// Если вкладка уже существует, делаем её активной
+					const existingTab = this.activeWorkspace.tabs.find(
+						(tab) =>
+							tab.id === modData.id || tab.path === modData.path
+					)
+					if (existingTab) {
+						this.activeWorkspace.activeFileTabId = existingTab.id
+					}
+				}
 			}
 		}
 	}
@@ -143,6 +187,28 @@ export class WorkspaceStore {
 			ws.tabs.some((tab) => tab.id === tabId)
 		)
 
+		// Запоминаем, была ли удаляемая вкладка активной
+		const wasActiveTab =
+			workspaceWithTab && workspaceWithTab.activeFileTabId === tabId
+
+		// Сохраняем ссылку на последнюю вкладку перед удалением
+		let lastTabId = ""
+		if (
+			workspaceWithTab &&
+			wasActiveTab &&
+			workspaceWithTab.tabs.length > 1
+		) {
+			// Находим ID вкладки, которая станет активной после удаления
+			const tabIndex = workspaceWithTab.tabs.findIndex(
+				(tab) => tab.id === tabId
+			)
+			const newActiveIndex =
+				tabIndex === workspaceWithTab.tabs.length - 1
+					? tabIndex - 1 // Если удаляем последнюю, берем предпоследнюю
+					: tabIndex + 1 // Иначе берем следующую
+			lastTabId = workspaceWithTab.tabs[newActiveIndex]?.id || ""
+		}
+
 		// Обновляем вкладки в рабочих пространствах
 		this.WorkspaceStoreData.workspaces =
 			this.WorkspaceStoreData.workspaces.map((ws) => {
@@ -152,53 +218,54 @@ export class WorkspaceStore {
 				}
 			})
 
-		// После фильтрации проверяем, остались ли вкладки в рабочем пространстве
-		const emptyWorkspaces = this.WorkspaceStoreData.workspaces.filter(
-			(ws) => ws.tabs.length === 0
-		)
-
+		// После фильтрации проверяем, остались ли вкладки в рабочих пространствах
 		// Удаляем пустые рабочие пространства
-		if (emptyWorkspaces.length > 0) {
-			this.WorkspaceStoreData.workspaces =
-				this.WorkspaceStoreData.workspaces.filter(
-					(ws) => ws.tabs.length > 0
-				)
-		}
+		this.WorkspaceStoreData.workspaces =
+			this.WorkspaceStoreData.workspaces.filter(
+				(ws) => ws.tabs.length > 0
+			)
 
 		// Если после удаления не осталось рабочих пространств, сбрасываем активное
 		if (this.WorkspaceStoreData.workspaces.length === 0) {
 			this.WorkspaceStoreData.activeWorkspaceId = ""
+			return
 		}
-		// Если было удалено активное рабочее пространство, делаем активным первое оставшееся
-		else if (
+
+		// Если было удалено активное рабочее пространство, делаем активным последнее оставшееся
+		if (
 			!this.WorkspaceStoreData.workspaces.some(
 				(ws) => ws.id === this.WorkspaceStoreData.activeWorkspaceId
 			)
 		) {
-			this.WorkspaceStoreData.activeWorkspaceId =
+			const lastWorkspace =
 				this.WorkspaceStoreData.workspaces[
 					this.WorkspaceStoreData.workspaces.length - 1
-				].id
+				]
+			this.WorkspaceStoreData.activeWorkspaceId = lastWorkspace.id
+
+			// Устанавливаем активную вкладку в новом активном рабочем пространстве
+			if (lastWorkspace.tabs.length > 0) {
+				lastWorkspace.activeFileTabId =
+					lastWorkspace.tabs[lastWorkspace.tabs.length - 1].id
+			}
+			return
 		}
-		// Если в активном рабочем пространстве была удалена активная вкладка, выбираем новую активную вкладку
-		else {
-			const activeWorkspace = this.activeWorkspace
-			if (
-				activeWorkspace &&
-				workspaceWithTab &&
-				workspaceWithTab.id === activeWorkspace.id &&
-				tabId === activeWorkspace.activeFileTabId
-			) {
-				if (activeWorkspace.tabs.length > 0) {
-					// Если остались другие вкладки, делаем активной первую
-					activeWorkspace.activeFileTabId =
-						activeWorkspace.tabs[
-							this.WorkspaceStoreData.workspaces.length - 1
-						].id
+
+		// Если в активном рабочем пространстве была удалена активная вкладка
+		const activeWorkspace = this.activeWorkspace
+		if (activeWorkspace && wasActiveTab) {
+			if (activeWorkspace.tabs.length > 0) {
+				if (lastTabId) {
+					// Используем предварительно вычисленный ID следующей активной вкладки
+					activeWorkspace.activeFileTabId = lastTabId
 				} else {
-					// Это условие не должно выполниться, так как пустые рабочие пространства уже удалены
-					activeWorkspace.activeFileTabId = ""
+					// Делаем активной последнюю вкладку
+					activeWorkspace.activeFileTabId =
+						activeWorkspace.tabs[activeWorkspace.tabs.length - 1].id
 				}
+			} else {
+				// Это условие не должно выполниться, так как пустые рабочие пространства уже удалены
+				activeWorkspace.activeFileTabId = ""
 			}
 		}
 	}

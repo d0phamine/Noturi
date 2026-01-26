@@ -22,7 +22,9 @@ export const WorkspaceTabs: FC = observer(() => {
 	const tabsStyles = tabsRecipe()
 	const activeTabRef = useRef<HTMLButtonElement>(null)
 
-	const { fileTabs, activeFileTabId } = WorkspaceStore.WorkspaceStoreData
+	const activeWorkspace = WorkspaceStore.activeWorkspace
+	const fileTabs = activeWorkspace?.tabs || []
+	const activeFileTabId = activeWorkspace?.activeFileTabId || ""
 
 	const [hoveredTabId, setHoveredTabId] = useState<string | null>(null)
 
@@ -48,11 +50,11 @@ export const WorkspaceTabs: FC = observer(() => {
 		FsStore.writeFile(tab.path, tab.content)
 			.then(() => {
 				WorkspaceStore.setFileUnсhanged()
+				WorkspaceStore.deleteFileTab(tab.id)
 			})
 			.catch((error) => {
 				console.error("File save error", error)
 			})
-		WorkspaceStore.deleteFileTab(tab.id)
 	}
 
 	return (
@@ -65,9 +67,14 @@ export const WorkspaceTabs: FC = observer(() => {
 				variant="plain"
 				css={tabsStyles.root}
 				value={activeFileTabId}
-				onValueChange={(e) =>
-					WorkspaceStore.setActiveFileTabId(e.value)
-				}
+				onValueChange={(e) => {
+					if (activeWorkspace) {
+						WorkspaceStore.setActiveFileTabIdInWorkspace(
+							activeWorkspace.id,
+							e.value
+						)
+					}
+				}}
 			>
 				<Tabs.List css={tabsStyles.list}>
 					{fileTabs?.map((tab) => (
@@ -110,7 +117,10 @@ export const WorkspaceTabs: FC = observer(() => {
 										/>
 									</SimpleDialog.Trigger>
 									<SimpleDialog.Content>
-										<p>Your changes will be lost if you don't save them.</p>
+										<p>
+											Your changes will be lost if you
+											don't save them.
+										</p>
 									</SimpleDialog.Content>
 								</SimpleDialog>
 							) : (

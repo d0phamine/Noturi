@@ -14,7 +14,9 @@ import { workspaceAdditionsRecipe } from "./style"
 export const WorkspaceAdditions: FC = observer(() => {
 	const { WorkspaceStore } = useStores()
 
-	const { activeFileTabId, fileTabs } = WorkspaceStore.WorkspaceStoreData
+	const activeWorkspace = WorkspaceStore.activeWorkspace
+	const fileTabs = activeWorkspace?.tabs || []
+	const activeFileTabId = activeWorkspace?.activeFileTabId || ""
 
 	const activeTab = fileTabs.find((tab) => tab.id === activeFileTabId)
 

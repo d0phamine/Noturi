@@ -47,8 +47,9 @@ export const WorkspaceTreeView: FC = observer(() => {
 	const { FsStore, WorkspaceStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
-	const { activeFileTabId, expandedTreeIds } =
-		WorkspaceStore.WorkspaceStoreData
+	const { expandedTreeIds } = WorkspaceStore.WorkspaceStoreData
+	const activeWorkspace = WorkspaceStore.activeWorkspace
+	const activeFileTabId = activeWorkspace?.activeFileTabId || ""
 
 	const activeWorkspaceTreeViewElemRef = useRef<HTMLDivElement>(null)
 

@@ -18,7 +18,9 @@ export const MonacoEditor: FC = observer(() => {
 	const { WorkspaceStore } = useStores()
 	const { colorMode } = useColorMode()
 
-	const { fileTabs, activeFileTabId } = WorkspaceStore.WorkspaceStoreData
+	const activeWorkspace = WorkspaceStore.activeWorkspace
+	const fileTabs = activeWorkspace?.tabs || []
+	const activeFileTabId = activeWorkspace?.activeFileTabId || ""
 	const activeFile = fileTabs.find((tab) => tab.id === activeFileTabId)
 
 	const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
