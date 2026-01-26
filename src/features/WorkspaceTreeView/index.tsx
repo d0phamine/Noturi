@@ -47,7 +47,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 	const { FsStore, WorkspaceStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
-	const { activeFileTabId, expandedWorkspaceIds } =
+	const { activeFileTabId, expandedTreeIds } =
 		WorkspaceStore.WorkspaceStoreData
 
 	const activeWorkspaceTreeViewElemRef = useRef<HTMLDivElement>(null)
@@ -92,7 +92,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 		// for opening dirs in treeview for active tab
 		if (activeFileTabId) {
 			const ancestorIds = getAncestorIds(activeFileTabId, treeViewData)
-			WorkspaceStore.expandWorkspaceAncestors(ancestorIds as string[])
+			WorkspaceStore.expandTreeAncestors(ancestorIds as string[])
 		}
 		// for automate scrolling to active element in treeview
 		if (activeWorkspaceTreeViewElemRef.current) {
@@ -111,7 +111,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 			togglableSelect
 			clickAction="EXCLUSIVE_SELECT"
 			selectedIds={selectedIds}
-			expandedIds={expandedWorkspaceIds}
+			expandedIds={expandedTreeIds}
 			multiSelect
 			className={workspaceTreeViewRecipe()}
 			onNodeSelect={async (e) => {
@@ -135,7 +135,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 				console.log(newSelectedIds)
 			}}
 			onExpand={(props) => {
-				WorkspaceStore.setExpandedWorkspaceIds(
+				WorkspaceStore.setExpandedTreeIds(
 					props.element.id as string,
 					props.isExpanded
 				)
