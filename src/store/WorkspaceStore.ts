@@ -1,12 +1,12 @@
-import { makeAutoObservable, remove } from "mobx"
+import { makeAutoObservable } from "mobx"
 import { v4 as uuidv4 } from "uuid"
 
 import { FileTreeMetadata } from "@/store/FsStore"
 
 export type FileTabDataType = {
-	id: string
-	name: string
-	path: string
+	id: string // Уникальный ID вкладки (независимо от файла)
+	filePath: string // Путь к файлу (может быть один для нескольких табов)
+	fileName: string // Имя файла
 	content: string
 	originalContent: string
 	changed: boolean
@@ -16,22 +16,20 @@ export type WorkspaceDataType = {
 	id: string
 	tabs: FileTabDataType[]
 	activeWsTabId: string
+	previousActiveTabId: string // Предыдущий активный таб для навигации при закрытии
+	tabHistory: string[] // История активных табов [oldest ... newest]
 }
 
 export interface IWorkspaceStore {
-	activeWsTabId: string
 	workspaces: WorkspaceDataType[]
 	activeWorkspaceId: string
-	lastDeletedWsId: string
 	expandedTreeIds: string[]
 }
 
 export class WorkspaceStore {
 	public WorkspaceStoreData: IWorkspaceStore = {
-		activeWsTabId: "",
 		workspaces: [],
 		activeWorkspaceId: "",
-		lastDeletedWsId: "",
 		expandedTreeIds: []
 	}
 
@@ -44,7 +42,9 @@ export class WorkspaceStore {
 		this.WorkspaceStoreData.workspaces.push({
 			id: newWorkspaceId,
 			tabs: [],
-			activeWsTabId: ""
+			activeWsTabId: "",
+			previousActiveTabId: "",
+			tabHistory: []
 		})
 		this.WorkspaceStoreData.activeWorkspaceId = newWorkspaceId
 		return newWorkspaceId
@@ -56,39 +56,62 @@ export class WorkspaceStore {
 		)
 	}
 
-	get activeWsTabId(): string {
-		return this.activeWorkspace?.activeWsTabId || ""
-	}
-
-	get activeTab(): FileTabDataType | undefined {
-		const workspace = this.activeWorkspace
-		if (!workspace || !workspace.activeWsTabId) return undefined
-
-		return workspace.tabs.find((tab) => tab.id === workspace.activeWsTabId)
-	}
-
-	public deleteEmptyWorkspace(): string {
-		const removedWorkspaceIds: string = this.WorkspaceStoreData.workspaces
-			.filter((ws) => ws.tabs.length === 0)
-			.map((ws) => ws.id)[0]
+	public deleteEmptyWorkspace(): void {
+		const wasActiveWorkspaceDeleted = !this.WorkspaceStoreData.workspaces.some(
+			(ws) => ws.id === this.WorkspaceStoreData.activeWorkspaceId && ws.tabs.length > 0
+		)
 
 		this.WorkspaceStoreData.workspaces =
 			this.WorkspaceStoreData.workspaces.filter(
 				(ws) => ws.tabs.length > 0
 			)
-		return removedWorkspaceIds
+
+		// Если активный workspace был удален, выбираем первый оставшийся
+		if (wasActiveWorkspaceDeleted && this.WorkspaceStoreData.workspaces.length > 0) {
+			this.WorkspaceStoreData.activeWorkspaceId = 
+				this.WorkspaceStoreData.workspaces[0].id
+		}
 	}
 
 	public setActiveFileTabIdInWorkspace = (
 		workspaceId: string,
 		tabId: string
 	) => {
+		// Находим workspace по ID
+		const workspace = this.WorkspaceStoreData.workspaces.find(
+			(ws) => ws.id === workspaceId
+		)
+		
+		// Убеждаемся, что таб действительно существует в этом workspace'е
+		const tabExists = workspace?.tabs.some((tab) => tab.id === tabId)
+		
+		if (!workspace || !tabExists) {
+			console.warn(
+				`Cannot set active tab ${tabId} in workspace ${workspaceId}. Tab not found.`
+			)
+			return
+		}
+
+		// Обновляем ТОЛЬКО этот workspace, не трогая другие
 		this.WorkspaceStoreData.workspaces =
 			this.WorkspaceStoreData.workspaces.map((ws) => {
 				if (ws.id === workspaceId) {
+					// Сохраняем предыдущий активный таб
+					const previousTabId = ws.activeWsTabId
+					
+					// Добавляем новый таб в историю (удаляем если уже был, потом добавляем в конец)
+					const newHistory = ws.tabHistory.filter((id) => id !== tabId)
+					newHistory.push(tabId)
+					// Ограничиваем историю 50 табами
+					if (newHistory.length > 10) {
+						newHistory.shift()
+					}
+					
 					return {
 						...ws,
-						activeWsTabId: tabId
+						activeWsTabId: tabId,
+						previousActiveTabId: previousTabId,
+						tabHistory: newHistory
 					}
 				}
 				return ws
@@ -106,7 +129,7 @@ export class WorkspaceStore {
 					return {
 						...ws,
 						tabs: [...ws.tabs, tab],
-						// Set as active tab when it's the first tab added to the workspace
+						
 						activeWsTabId:
 							ws.tabs.length === 0 ? tab.id : ws.activeWsTabId
 					}
@@ -116,16 +139,16 @@ export class WorkspaceStore {
 	}
 
 	public addFileTab = (
-		name: string,
-		id: string,
+		fileName: string,
 		metadata: FileTreeMetadata,
 		content: string
 	) => {
 		if (!metadata.isDirectory) {
+			const newTabId = uuidv4()
 			const modData: FileTabDataType = {
-				id: uuidv4(),
-				name: name,
-				path: metadata.path,
+				id: newTabId,
+				filePath: metadata.path,
+				fileName: fileName,
 				originalContent: content,
 				content: content,
 				changed: false
@@ -135,114 +158,106 @@ export class WorkspaceStore {
 			if (!this.WorkspaceStoreData.workspaces.length) {
 				const newWorkspaceId = this.createWorkspace()
 				this.addTabToWorkspace(modData, newWorkspaceId)
-				this.setActiveFileTabIdInWorkspace(newWorkspaceId, modData.id)
+				this.setActiveFileTabIdInWorkspace(newWorkspaceId, newTabId)
 			} else {
-				const activeWorkspace = this.activeWorkspace
+				const activeWorkspace = this.WorkspaceStoreData.workspaces.find(
+					(ws) => ws.id === this.WorkspaceStoreData.activeWorkspaceId
+				)
 
 				if (activeWorkspace) {
-					// Проверяем, существует ли уже вкладка с таким путем в активном рабочем пространстве
-					const existingTab = activeWorkspace.tabs.find(
-						(tab) => tab.path === modData.path
+					
+					this.addTabToWorkspace(modData, activeWorkspace.id)
+					
+					this.setActiveFileTabIdInWorkspace(
+						activeWorkspace.id,
+						newTabId
 					)
-
-					if (existingTab) {
-						// Если вкладка уже существует, делаем её активной
-						this.setActiveFileTabIdInWorkspace(
-							activeWorkspace.id,
-							existingTab.id
-						)
-					} else {
-						// Добавляем вкладку в активное рабочее пространство
-						this.addTabToWorkspace(modData, activeWorkspace.id)
-						// Устанавливаем эту вкладку как активную в рабочем пространстве
-						this.setActiveFileTabIdInWorkspace(
-							activeWorkspace.id,
-							modData.id
-						)
-					}
 				}
 			}
 		}
 	}
 
 	public deleteFileTab = (tabId: string, workspaceId?: string) => {
-		let workspaceWithTab
-
-		if (workspaceId) {
-			workspaceWithTab = this.WorkspaceStoreData.workspaces.find(
-				(ws) =>
-					ws.id === workspaceId &&
-					ws.tabs.some((tab) => tab.id === tabId)
-			)
-		} else {
-			workspaceWithTab = this.WorkspaceStoreData.workspaces.find((ws) =>
-				ws.tabs.some((tab) => tab.id === tabId)
-			)
-		}
+		// Находим workspace где находится таб
+		const workspaceWithTab = this.WorkspaceStoreData.workspaces.find((ws) => {
+			if (workspaceId && ws.id !== workspaceId) return false
+			return ws.tabs.some((tab) => tab.id === tabId)
+		})
 
 		if (!workspaceWithTab) return
 
-		// Остальной код метода без изменений...
+		// Проверяем был ли это активный таб
 		const wasActiveTab = workspaceWithTab.activeWsTabId === tabId
-
-		let lastTabId = ""
+		
+		// Выбираем новый активный таб (если был удален активный)
+		let newActiveTabId = ""
+		
 		if (wasActiveTab && workspaceWithTab.tabs.length > 1) {
-			const tabIndex = workspaceWithTab.tabs.findIndex(
-				(tab) => tab.id === tabId
-			)
-			const newActiveIndex =
-				tabIndex === workspaceWithTab.tabs.length - 1
-					? tabIndex - 1
-					: tabIndex + 1
-			lastTabId = workspaceWithTab.tabs[newActiveIndex]?.id || ""
+			// Пытаемся перейти на предыдущий открытый таб из истории
+			const historyWithoutDeleted = workspaceWithTab.tabHistory.filter((id) => id !== tabId)
+			if (historyWithoutDeleted.length > 0) {
+				// Берем последний (самый свежий) таб из истории, кроме удаляемого
+				newActiveTabId = historyWithoutDeleted[historyWithoutDeleted.length - 1]
+			} else {
+				// Если истории нет, выбираем первый таб в текущем workspace
+				newActiveTabId = workspaceWithTab.tabs.find((tab) => tab.id !== tabId)?.id || ""
+			}
 		}
 
-		// Удаляем вкладку из рабочего пространства
+		// Удаляем таб и обновляем активный
 		this.WorkspaceStoreData.workspaces =
 			this.WorkspaceStoreData.workspaces.map((ws) => {
 				if (ws.id === workspaceWithTab!.id) {
+					const newTabHistory = ws.tabHistory.filter((id) => id !== tabId)
+					// Если это был активный таб, меняем на newActiveTabId, иначе оставляем прежний
+					const updatedActiveTabId = wasActiveTab ? newActiveTabId : ws.activeWsTabId
 					return {
 						...ws,
 						tabs: ws.tabs.filter((tab) => tab.id !== tabId),
-						activeWsTabId: wasActiveTab
-							? lastTabId ||
-								(ws.tabs.length > 1
-									? ws.tabs.filter((t) => t.id !== tabId)[0]
-											?.id
-									: "")
-							: ws.activeWsTabId
+						activeWsTabId: updatedActiveTabId,
+						tabHistory: newTabHistory,
+						previousActiveTabId: ""
 					}
 				}
 				return ws
 			})
 
-		this.WorkspaceStoreData.lastDeletedWsId = this.deleteEmptyWorkspace()
+		// Удаляем пустые workspace'ы (это может поменять activeWorkspaceId)
+		this.deleteEmptyWorkspace()
 
-		// Если после удаления не осталось рабочих пространств, сбрасываем активное
-		if (this.WorkspaceStoreData.workspaces.length === 0) {
-			this.WorkspaceStoreData.activeWorkspaceId = ""
-			return
-		}
-
-		// Если было удалено активное рабочее пространство, делаем активным последнее оставшееся
-		if (
-			!this.WorkspaceStoreData.workspaces.some(
+		// После удаления пустых workspace'ов, проверяем, что activeWorkspaceId валиден
+		if (this.WorkspaceStoreData.workspaces.length > 0) {
+			const activeWorkspaceExists = this.WorkspaceStoreData.workspaces.some(
 				(ws) => ws.id === this.WorkspaceStoreData.activeWorkspaceId
 			)
-		) {
-			const lastWorkspace =
-				this.WorkspaceStoreData.workspaces[
-					this.WorkspaceStoreData.workspaces.length - 1
-				]
-			this.WorkspaceStoreData.activeWorkspaceId = lastWorkspace.id
-
-			// Устанавливаем активную вкладку в новом активном рабочем пространстве
-			if (lastWorkspace.tabs.length > 0 && !lastWorkspace.activeWsTabId) {
-				this.setActiveFileTabIdInWorkspace(
-					lastWorkspace.id,
-					lastWorkspace.tabs[0].id
+			if (!activeWorkspaceExists) {
+				this.WorkspaceStoreData.activeWorkspaceId =
+					this.WorkspaceStoreData.workspaces[0].id
+				// Если в новом активном workspace'е есть табы, сделаем первый активным
+				const newActiveWorkspace = this.WorkspaceStoreData.workspaces[0]
+				if (newActiveWorkspace.tabs.length > 0) {
+					this.setActiveFileTabIdInWorkspace(
+						newActiveWorkspace.id,
+						newActiveWorkspace.tabs[0].id
+					)
+				}
+			} else if (newActiveTabId && wasActiveTab) {
+				// Если нужно переключить активный таб, убедитесь что workspace содержит этот таб
+				const workspaceWithNewTab = this.WorkspaceStoreData.workspaces.find(
+					(ws) => ws.tabs.some((tab) => tab.id === newActiveTabId)
 				)
+				if (workspaceWithNewTab) {
+					// Если таб находится в другом workspace, переключаемся на него
+					if (workspaceWithNewTab.id !== this.WorkspaceStoreData.activeWorkspaceId) {
+						this.WorkspaceStoreData.activeWorkspaceId = workspaceWithNewTab.id
+					}
+					// Устанавливаем этот таб активным
+					this.setActiveFileTabIdInWorkspace(workspaceWithNewTab.id, newActiveTabId)
+				}
 			}
+		} else {
+			// Если нет workspace'ов, сбрасываем активный
+			this.WorkspaceStoreData.activeWorkspaceId = ""
 		}
 	}
 
@@ -257,7 +272,7 @@ export class WorkspaceStore {
 		const targetWsId =
 			workspaceId || this.WorkspaceStoreData.activeWorkspaceId
 
-		// Находим указанное рабочее пространство
+		// Находим указанное рабочое пространство
 		const workspace = this.WorkspaceStoreData.workspaces.find(
 			(ws) => ws.id === targetWsId
 		)
@@ -270,10 +285,12 @@ export class WorkspaceStore {
 						...ws,
 						tabs: ws.tabs.map((tab) => {
 							if (tab.id === ws.activeWsTabId) {
+								const newChanged =
+									tab.originalContent !== newContent
 								return {
 									...tab,
 									content: newContent,
-									changed: tab.originalContent !== newContent
+									changed: newChanged
 								}
 							}
 							return tab
@@ -284,7 +301,7 @@ export class WorkspaceStore {
 			})
 	}
 
-	public setFileUnсhanged = (workspaceId?: string) => {
+	public setFileUnchanged = (workspaceId?: string) => {
 		const targetWsId =
 			workspaceId || this.WorkspaceStoreData.activeWorkspaceId
 		const workspace = this.WorkspaceStoreData.workspaces.find(

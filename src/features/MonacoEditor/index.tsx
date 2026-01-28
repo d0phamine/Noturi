@@ -1,6 +1,6 @@
 import Editor from "@monaco-editor/react"
 
-import { FC, useEffect, useRef, useState } from "react"
+import { FC, useEffect, useRef } from "react"
 
 import { observer } from "mobx-react-lite"
 import { editor } from "monaco-editor"
@@ -19,26 +19,27 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 		const { WorkspaceStore } = useStores()
 		const { colorMode } = useColorMode()
 
-		// Keep a local copy of editor content to prevent it from being lost during re-renders
-		const [editorContent, setEditorContent] = useState<string>("")
-
+		// Получаем конкретный workspace по ID
 		const workspace = WorkspaceStore.WorkspaceStoreData.workspaces.find(
 			(ws) => ws.id === workspaceId
 		)
-		const wsTabs = workspace?.tabs || []
-		const activeWsTabId = workspace?.activeWsTabId || ""
-		const activeFile = wsTabs.find((tab) => tab.id === activeWsTabId)
+		
+		// Если этот workspace был удален, не рендерим ничего
+		if (!workspace) {
+			return (
+				<div className={monacoEditorContainerRecipe()}></div>
+			)
+		}
+		
+		const activeWsTabId = workspace.activeWsTabId || ""
+		const activeFile = workspace.tabs.find(
+			(tab) => tab.id === activeWsTabId
+		)
 
+		// Храним ref на Editor для каждого workspace'а
 		const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
-
-		// Update local content when active file changes
-		useEffect(() => {
-			if (activeFile) {
-				setEditorContent(activeFile.content)
-			} else {
-				setEditorContent("")
-			}
-		}, [activeFile])
+		// Отслеживаем предыдущий файл, чтобы не обновлять лишний раз
+		const previousFilePathRef = useRef<string>("")
 
 		const handleEditorWillMount = (
 			monaco: typeof import("monaco-editor")
@@ -53,56 +54,86 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 			)
 		}
 
+		// Обновляем содержимое editor при смене активного файла
 		useEffect(() => {
-			if (editorRef.current) {
-				editorRef.current.focus()
-
-				// Ensure editor model is updated when switching between workspaces
-				if (activeFile) {
-					const model = editorRef.current.getModel()
-					if (model) {
-						model.setValue(activeFile.content)
-					}
-				}
+			if (!editorRef.current || !activeFile) {
+				return
 			}
-		}, [activeFile, workspaceId])
 
-		// If there's no active file, don't render the editor
+			const model = editorRef.current.getModel()
+			if (!model) {
+				return
+			}
+
+			// Если файл изменился (по пути, не по ID)
+			if (previousFilePathRef.current !== activeFile.filePath) {
+				// Чистая смена файла - переинициализируем модель
+				model.setValue(activeFile.content)
+				previousFilePathRef.current = activeFile.filePath
+			}
+		}, [activeFile?.filePath, activeFile?.id]) // Зависим от пути и ID
+
+		// Обновляем только если содержимое активного файла изменилось (из других источников)
+		useEffect(() => {
+			if (!editorRef.current || !activeFile) {
+				return
+			}
+
+			const model = editorRef.current.getModel()
+			if (!model) {
+				return
+			}
+
+			const currentContent = model.getValue()
+			
+			// Обновляем только если отличается от текущего в Editor'е
+			// Это избегает сброса undo/redo истории при собственном редактировании
+			if (currentContent !== activeFile.content) {
+				model.setValue(activeFile.content)
+			}
+		}, [activeFile?.content])
+
+		// Если нет активного файла, показываем пустой контейнер
 		if (!activeFile) {
-			return <div className={monacoEditorContainerRecipe()}></div>
+			return (
+				<div 
+					className={monacoEditorContainerRecipe()}
+					onClick={() => WorkspaceStore.setActiveWorkspace(workspaceId)}
+				></div>
+			)
 		}
 
 		return (
-			<div className={monacoEditorContainerRecipe()}>
-				{wsTabs.length > 0 && activeFile ? (
-					<Editor
-						key={`${workspaceId}-${activeWsTabId}`}
-						theme={
-							colorMode === "dark" ? "githubDark" : "githubLight"
+			<div 
+				className={monacoEditorContainerRecipe()}
+				onClick={() => WorkspaceStore.setActiveWorkspace(workspaceId)}
+			>
+				<Editor
+					// НЕ используем key - Editor должен сохранять состояние при перерендере
+					theme={colorMode === "dark" ? "githubDark" : "githubLight"}
+					// Используем defaultValue только для первой инициализации
+					defaultValue={activeFile.content}
+					path={`${workspaceId}/${activeFile.filePath}`}
+					beforeMount={handleEditorWillMount}
+					onMount={(editorInstance) => {
+						editorRef.current = editorInstance
+						editorInstance.focus()
+						previousFilePathRef.current = activeFile.filePath
+					}}
+					onChange={(newContent) => {
+						if (newContent !== undefined) {
+							WorkspaceStore.setFileChanged(
+								newContent,
+								workspaceId
+							)
 						}
-						value={activeFile.content}
-						path={activeFile.path}
-						beforeMount={handleEditorWillMount}
-						onMount={(editor) => {
-							editorRef.current = editor
-							editor.focus()
-						}}
-						onChange={(newContent) => {
-							if (newContent !== undefined) {
-								setEditorContent(newContent)
-								WorkspaceStore.setFileChanged(
-									newContent,
-									workspaceId
-								)
-							}
-						}}
-						options={{
-							// These options improve editor performance
-							automaticLayout: true,
-							scrollBeyondLastLine: false
-						}}
-					/>
-				) : null}
+					}}
+					options={{
+						automaticLayout: true,
+						scrollBeyondLastLine: false,
+						minimap: { enabled: true }
+					}}
+				/>
 			</div>
 		)
 	}

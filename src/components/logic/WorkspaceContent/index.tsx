@@ -4,6 +4,8 @@ import { FC, useRef } from "react"
 
 import { observer } from "mobx-react-lite"
 
+import { useStores } from "@/store"
+
 import { WorkspaceAdditions, WorkspaceTabs } from "@/components"
 
 import {
@@ -14,7 +16,17 @@ import {
 
 export const WorkspaceContent: FC<{ workspaceId: string }> = observer(
 	({ workspaceId }) => {
+		const { WorkspaceStore } = useStores()
 		const contentRef = useRef<HTMLDivElement>(null)
+
+		// Если workspace был удален, не рендерим
+		const workspace = WorkspaceStore.WorkspaceStoreData.workspaces.find(
+			(ws) => ws.id === workspaceId
+		)
+		if (!workspace) {
+			return null
+		}
+
 		return (
 			<div data-component="workspace" className={workspaceRecipe()}>
 				<div

@@ -4,11 +4,12 @@ import { cva } from "@/styles/panda/css"
 
 export const workspaceTabsContainerRecipe = cva({
 	base: {
-		height: "100%",
 		borderColor: "border.primary",
 		flexGrow: "1",
 		flexBasis: "auto",
-		minWidth: 0
+		minWidth: 0,
+		display: "flex",
+		flexDirection: "column"
 	}
 })
 
@@ -19,13 +20,22 @@ export const workspaceTabsRecipe = defineSlotRecipe({
 		root: {
 			height: "{spacing.9}",
 			borderColor: "inherit",
+			width: "100%",
+			// Allow the root to provide a scrollable area for the tabs list
+			overflowX: "auto",
+			overflowY: "hidden"
 		},
 		list: {
 			height: "{spacing.9}",
 			minHeight: "unset",
-			width: "100%",
+			// Allow the list to grow to the width of its content so overflow occurs
+			minWidth: "max-content",
 			borderColor: "inherit",
-			overflowX: "auto"
+			overflowX: "auto",
+			overflowY: "hidden",
+			display: "flex",
+			flexDirection: "row",
+			flexWrap: "nowrap"
 		},
 		trigger: {
 			fontSize: "xs",
@@ -37,12 +47,12 @@ export const workspaceTabsRecipe = defineSlotRecipe({
 			borderRadius: 0,
 			bg: "bg.accent",
 			flexShrink: 0,
+			transition: "{durations.fast}",
 
 			_selected: {
 				borderBottomWidth: 0,
 				bg: "bg.primary",
-				boxShadow: "inset 0px 1px {colors.primary.400}",
-				transition: "{durations.fast}",
+				boxShadow: "inset 0px 2px {colors.primary.400}",
 				_hover: {
 					bg: "bg.primary"
 				}

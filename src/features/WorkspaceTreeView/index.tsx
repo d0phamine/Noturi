@@ -48,12 +48,6 @@ export const WorkspaceTreeView: FC = observer(() => {
 
 	const { selectedFileTree } = FsStore.FsStoreData
 	const { expandedTreeIds } = WorkspaceStore.WorkspaceStoreData
-	const activeWorkspace = WorkspaceStore.activeWorkspace
-	const activeWsTabId = activeWorkspace?.activeWsTabId || ""
-
-	const activeWorkspaceTreeViewElemRef = useRef<HTMLDivElement>(null)
-
-	const selectedIds = activeWsTabId ? [activeWsTabId] : []
 
 	const convertedChildren = selectedFileTree
 		? convertToTreeWithMetadata(selectedFileTree)
@@ -69,71 +63,21 @@ export const WorkspaceTreeView: FC = observer(() => {
 
 	const treeViewData = flattenTree<FileMetadata>(rootNode) as FileTreeNode[]
 
-	const getAncestorIds = (
-		nodeId: string | number,
-		flatData: FileTreeNode[]
-	): (string | number)[] => {
-		const ancestorIds: (string | number)[] = []
-		let currentNode = flatData.find((node) => node.id === nodeId)
-
-		while (currentNode && currentNode.parent !== null) {
-			const parentNode = flatData.find(
-				(node) => node.id === currentNode!.parent
-			)
-			if (parentNode && parentNode.parent !== null) {
-				ancestorIds.push(parentNode.id)
-			}
-			currentNode = parentNode
-		}
-
-		return ancestorIds
-	}
-
-	useEffect(() => {
-		// for opening dirs in treeview for active tab
-		if (activeWsTabId) {
-			const ancestorIds = getAncestorIds(activeWsTabId, treeViewData)
-			WorkspaceStore.expandTreeAncestors(ancestorIds as string[])
-		}
-		// for automate scrolling to active element in treeview
-		if (activeWorkspaceTreeViewElemRef.current) {
-			activeWorkspaceTreeViewElemRef.current?.scrollIntoView({
-				behavior: "instant",
-				block: "center",
-				inline: "nearest"
-			})
-		}
-	}, [activeWsTabId])
-
 	return (
 		<TreeView
 			data={treeViewData}
 			aria-label="directory tree"
-			togglableSelect
+			togglableSelect={false}
 			clickAction="EXCLUSIVE_SELECT"
-			selectedIds={selectedIds}
 			expandedIds={expandedTreeIds}
-			multiSelect
 			className={workspaceTreeViewRecipe()}
 			onNodeSelect={async (e) => {
-				const { metadata, name, id } = e.element
-				const newSelectedIds = Array.from(
-					e.treeState?.selectedIds ?? []
-				)
-				if (
-					newSelectedIds.length === 1 &&
-					isFileTreeMetadata(metadata)
-				) {
+				const { metadata, name } = e.element
+				if (isFileTreeMetadata(metadata)) {
 					const content = await FsStore.readFile(metadata)
-					WorkspaceStore.addFileTab(
-						name,
-						id as string,
-						metadata,
-						content || ""
-					)
+					// Передаем имя файла и метаданные, новый ID будет сгенерирован в Store
+					WorkspaceStore.addFileTab(name, metadata, content || "")
 				}
-
-				console.log(newSelectedIds)
 			}}
 			onExpand={(props) => {
 				WorkspaceStore.setExpandedTreeIds(
@@ -145,20 +89,14 @@ export const WorkspaceTreeView: FC = observer(() => {
 				element,
 				isExpanded,
 				getNodeProps,
-				level,
-				isSelected
+				level
 			}) => (
 				<div
 					{...getNodeProps()}
 					className={workspaceTreeViewElemRecipe({
 						level: getLimitedLevel(level)
 					})}
-					ref={
-						activeWsTabId === element.id
-							? activeWorkspaceTreeViewElemRef
-							: null
-					}
-					aria-selected={isSelected}
+					aria-label={element.name}
 				>
 					{element.metadata?.isDirectory ? (
 						<ChevronExplorerIcon isOpen={isExpanded} />

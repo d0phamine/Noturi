@@ -25,7 +25,7 @@ export const WorkspaceAdditions: FC = observer(() => {
 			data-component="workspace-additions"
 			className={workspaceAdditionsRecipe()}
 		>
-			{activeTab && isMarkdownFile(activeTab.name) ? (
+			{activeTab && isMarkdownFile(activeTab.fileName) ? (
 				<IconButton size={"2xs"} variant="ghost">
 					<ScanEye></ScanEye>
 				</IconButton>
