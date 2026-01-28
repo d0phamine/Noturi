@@ -49,11 +49,11 @@ export const WorkspaceTreeView: FC = observer(() => {
 	const { selectedFileTree } = FsStore.FsStoreData
 	const { expandedTreeIds } = WorkspaceStore.WorkspaceStoreData
 	const activeWorkspace = WorkspaceStore.activeWorkspace
-	const activeFileTabId = activeWorkspace?.activeFileTabId || ""
+	const activeWsTabId = activeWorkspace?.activeWsTabId || ""
 
 	const activeWorkspaceTreeViewElemRef = useRef<HTMLDivElement>(null)
 
-	const selectedIds = activeFileTabId ? [activeFileTabId] : []
+	const selectedIds = activeWsTabId ? [activeWsTabId] : []
 
 	const convertedChildren = selectedFileTree
 		? convertToTreeWithMetadata(selectedFileTree)
@@ -91,8 +91,8 @@ export const WorkspaceTreeView: FC = observer(() => {
 
 	useEffect(() => {
 		// for opening dirs in treeview for active tab
-		if (activeFileTabId) {
-			const ancestorIds = getAncestorIds(activeFileTabId, treeViewData)
+		if (activeWsTabId) {
+			const ancestorIds = getAncestorIds(activeWsTabId, treeViewData)
 			WorkspaceStore.expandTreeAncestors(ancestorIds as string[])
 		}
 		// for automate scrolling to active element in treeview
@@ -103,7 +103,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 				inline: "nearest"
 			})
 		}
-	}, [activeFileTabId])
+	}, [activeWsTabId])
 
 	return (
 		<TreeView
@@ -127,8 +127,8 @@ export const WorkspaceTreeView: FC = observer(() => {
 					const content = await FsStore.readFile(metadata)
 					WorkspaceStore.addFileTab(
 						name,
-						metadata,
 						id as string,
+						metadata,
 						content || ""
 					)
 				}
@@ -154,7 +154,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 						level: getLimitedLevel(level)
 					})}
 					ref={
-						activeFileTabId === element.id
+						activeWsTabId === element.id
 							? activeWorkspaceTreeViewElemRef
 							: null
 					}

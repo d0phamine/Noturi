@@ -12,24 +12,27 @@ import {
 	workspaceRecipe
 } from "./style"
 
-export const WorkspaceContent: FC = observer(() => {
-	const contentRef = useRef<HTMLDivElement>(null)
-	return (
-		<div data-component="workspace" className={workspaceRecipe()}>
-			<div
-				data-component="workspace-header"
-				className={workspaceHeaderRecipe()}
-			>
-				<WorkspaceTabs />
-				<WorkspaceAdditions />
+export const WorkspaceContent: FC<{ workspaceId: string }> = observer(
+	({ workspaceId }) => {
+		const contentRef = useRef<HTMLDivElement>(null)
+		return (
+			<div data-component="workspace" className={workspaceRecipe()}>
+				<div
+					data-component="workspace-header"
+					className={workspaceHeaderRecipe()}
+				>
+					<WorkspaceTabs workspaceId={workspaceId} />
+					<WorkspaceAdditions />
+				</div>
+				<div
+					data-component="workspace-content"
+					className={workspaceContentRecipe()}
+					ref={contentRef}
+				>
+					<MonacoEditor workspaceId={workspaceId}/>
+				</div>
 			</div>
-			<div
-				data-component="workspace-content"
-				className={workspaceContentRecipe()}
-				ref={contentRef}
-			>
-				<MonacoEditor />
-			</div>
-		</div>
-	)
-})
+		)
+	}
+)
+

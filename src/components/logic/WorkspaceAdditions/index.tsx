@@ -15,10 +15,10 @@ export const WorkspaceAdditions: FC = observer(() => {
 	const { WorkspaceStore } = useStores()
 
 	const activeWorkspace = WorkspaceStore.activeWorkspace
-	const fileTabs = activeWorkspace?.tabs || []
-	const activeFileTabId = activeWorkspace?.activeFileTabId || ""
+	const wsTabs = activeWorkspace?.tabs || []
+	const activeWsTabId = activeWorkspace?.activeWsTabId || ""
 
-	const activeTab = fileTabs.find((tab) => tab.id === activeFileTabId)
+	const activeTab = wsTabs.find((tab) => tab.id === activeWsTabId)
 
 	return (
 		<div
@@ -31,7 +31,11 @@ export const WorkspaceAdditions: FC = observer(() => {
 				</IconButton>
 			) : null}
 			{activeTab ? (
-				<IconButton size={"2xs"} variant="ghost">
+				<IconButton
+					size={"2xs"}
+					variant="ghost"
+					onClick={() => WorkspaceStore.splitWorkspace(activeTab)}
+				>
 					<Columns2></Columns2>
 				</IconButton>
 			) : null}
