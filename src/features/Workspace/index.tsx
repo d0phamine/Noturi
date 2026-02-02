@@ -75,9 +75,8 @@ export const WorkSpace: FC = observer(() => {
 		}
 	})
 
-	const panels = splitterConfig
-		.getItems()
-		.filter((panel) => workspaces.some((ws) => ws.id === panel.id))
+	const panels = splitterConfig.getItems()
+	// .filter((panel) => workspaces.some((ws) => ws.id === panel.id))
 
 	useEffect(() => {
 		const currentWorkspacesCount = workspaces.length
@@ -144,7 +143,14 @@ export const WorkSpace: FC = observer(() => {
 							</Splitter.Panel>
 						)}
 						{panel.type === "handle" && (
-							<Splitter.ResizeTrigger id={panel.id} />
+							<Splitter.ResizeTrigger
+								id={panel.id}
+								css={splitterStyle.resizeTrigger}
+							>
+								<Splitter.ResizeTriggerSeparator
+									css={splitterStyle.resizeTriggerSeparator}
+								/>
+							</Splitter.ResizeTrigger>
 						)}
 					</Fragment>
 				))}

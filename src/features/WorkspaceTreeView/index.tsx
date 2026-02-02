@@ -63,6 +63,16 @@ export const WorkspaceTreeView: FC = observer(() => {
 
 	const treeViewData = flattenTree<FileMetadata>(rootNode) as FileTreeNode[]
 
+	const catchSelectedId = () => {
+		const activeWsTab = WorkspaceStore.activeWorkspace?.tabs.find(
+			(tab) => tab.id === WorkspaceStore.activeWorkspace?.activeWsTabId
+		)
+		const catchId = treeViewData.find(
+			(item) => item.metadata?.path === activeWsTab?.filePath
+		)?.id
+		return catchId ? [catchId] : []
+	}
+
 	return (
 		<TreeView
 			data={treeViewData}
@@ -70,6 +80,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 			togglableSelect={false}
 			clickAction="EXCLUSIVE_SELECT"
 			expandedIds={expandedTreeIds}
+			selectedIds={catchSelectedId()}
 			className={workspaceTreeViewRecipe()}
 			onNodeSelect={async (e) => {
 				const { metadata, name } = e.element
@@ -85,12 +96,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 					props.isExpanded
 				)
 			}}
-			nodeRenderer={({
-				element,
-				isExpanded,
-				getNodeProps,
-				level
-			}) => (
+			nodeRenderer={({ element, isExpanded, getNodeProps, level }) => (
 				<div
 					{...getNodeProps()}
 					className={workspaceTreeViewElemRecipe({
