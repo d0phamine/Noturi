@@ -157,60 +157,6 @@ export class WorkspaceStore {
 			})
 	}
 
-	public addFileTab = (
-		fileName: string,
-		metadata: FileTreeMetadata,
-		content: string
-	) => {
-		if (!metadata.isDirectory) {
-			const newTabId = uuidv4()
-			const modData: FileTabDataType = {
-				id: newTabId,
-				filePath: metadata.path,
-				fileName: fileName,
-				originalContent: content,
-				content: content,
-				changed: false
-			}
-			// Если нет рабочих пространств, создаем новое
-			if (!this.WorkspaceStoreData.workspaces.length) {
-				const newWorkspaceId = this.createWorkspace()
-				this.addTabToWorkspace(modData, newWorkspaceId)
-				this.setActiveFileTabIdInWorkspace(newWorkspaceId, newTabId)
-			} else {
-				const activeWorkspace = this.WorkspaceStoreData.workspaces.find(
-					(ws) => ws.id === this.WorkspaceStoreData.activeWorkspaceId
-				)
-
-				if (activeWorkspace) {
-					const haveCopyTabs = activeWorkspace.tabs.some(
-						(tab) => tab.filePath === modData.filePath
-					)
-					if (!haveCopyTabs) {
-						this.addTabToWorkspace(modData, activeWorkspace.id)
-
-						this.setActiveFileTabIdInWorkspace(
-							activeWorkspace.id,
-							newTabId
-						)
-					} else {
-						// TODO: Спорный момент, необходимо придумать как это обойти
-						// ищем здесь по path вкладку, чтобы сделать ее активной тк эта функция
-						// запускается из FileTreeView
-						const catchId =
-							activeWorkspace.tabs.find(
-								(tab) => tab.filePath === metadata.path
-							)?.id || ""
-						this.setActiveFileTabIdInWorkspace(
-							activeWorkspace.id,
-							catchId
-						)
-					}
-				}
-			}
-		}
-	}
-
 	public deleteFileTab = (tabId: string, workspaceId?: string) => {
 		// Находим workspace где находится таб
 		const workspaceWithTab = this.WorkspaceStoreData.workspaces.find(

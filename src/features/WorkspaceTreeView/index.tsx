@@ -1,10 +1,16 @@
-import { FC, useEffect, useRef, useState } from "react"
-import TreeView, { INode, flattenTree } from "react-accessible-treeview"
+import { FC } from "react"
+import TreeView, {
+	INode,
+	type ITreeViewOnNodeSelectProps,
+	flattenTree
+} from "react-accessible-treeview"
 
 import { observer } from "mobx-react-lite"
+import { v4 as uuidv4 } from "uuid"
 
 import { useStores } from "@/store"
 import { FileTree } from "@/store/FsStore"
+import { FileTabDataType } from "@/store/WorkspaceStore"
 
 import { isFileTreeMetadata } from "@/utils/typeguards"
 
@@ -47,7 +53,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 	const { FsStore, WorkspaceStore } = useStores()
 
 	const { selectedFileTree } = FsStore.FsStoreData
-	const { expandedTreeIds } = WorkspaceStore.WorkspaceStoreData
+	const { expandedTreeIds, workspaces } = WorkspaceStore.WorkspaceStoreData
 
 	const convertedChildren = selectedFileTree
 		? convertToTreeWithMetadata(selectedFileTree)
@@ -73,6 +79,62 @@ export const WorkspaceTreeView: FC = observer(() => {
 		return catchId ? [catchId] : []
 	}
 
+	const selectHandler = async (e: ITreeViewOnNodeSelectProps) => {
+		const { metadata, name } = e.element
+
+		if (isFileTreeMetadata(metadata)) {
+			const content = await FsStore.readFile(metadata)
+
+			if (!metadata.isDirectory) {
+				const newTabId = uuidv4()
+				const modData: FileTabDataType = {
+					id: newTabId,
+					filePath: metadata.path,
+					fileName: name,
+					originalContent: content || "",
+					content: content || "",
+					changed: false
+				}
+				if (!workspaces.length) {
+					const newWorkspaceId = WorkspaceStore.createWorkspace()
+					WorkspaceStore.addTabToWorkspace(modData, newWorkspaceId)
+					WorkspaceStore.setActiveFileTabIdInWorkspace(
+						newWorkspaceId,
+						newTabId
+					)
+				} else {
+					const activeWorkspace = WorkspaceStore.activeWorkspace
+
+					if (activeWorkspace) {
+						const haveCopyTabs = activeWorkspace.tabs.some(
+							(tab) => tab.filePath === modData.filePath
+						)
+						if (!haveCopyTabs) {
+							WorkspaceStore.addTabToWorkspace(
+								modData,
+								activeWorkspace.id
+							)
+
+							WorkspaceStore.setActiveFileTabIdInWorkspace(
+								activeWorkspace.id,
+								newTabId
+							)
+						} else {
+							const catchId =
+								activeWorkspace.tabs.find(
+									(tab) => tab.filePath === metadata.path
+								)?.id || ""
+							WorkspaceStore.setActiveFileTabIdInWorkspace(
+								activeWorkspace.id,
+								catchId
+							)
+						}
+					}
+				}
+			}
+		}
+	}
+
 	return (
 		<TreeView
 			data={treeViewData}
@@ -82,14 +144,7 @@ export const WorkspaceTreeView: FC = observer(() => {
 			expandedIds={expandedTreeIds}
 			selectedIds={catchSelectedId()}
 			className={workspaceTreeViewRecipe()}
-			onNodeSelect={async (e) => {
-				const { metadata, name } = e.element
-				if (isFileTreeMetadata(metadata)) {
-					const content = await FsStore.readFile(metadata)
-					// Передаем имя файла и метаданные, новый ID будет сгенерирован в Store
-					WorkspaceStore.addFileTab(name, metadata, content || "")
-				}
-			}}
+			onNodeSelect={async (e) => selectHandler(e)}
 			onExpand={(props) => {
 				WorkspaceStore.setExpandedTreeIds(
 					props.element.id as string,
