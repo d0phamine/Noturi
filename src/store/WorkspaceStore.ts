@@ -1,6 +1,8 @@
 import { makeAutoObservable } from "mobx"
 import { v4 as uuidv4 } from "uuid"
 
+import { FsStore } from "./FsStore"
+
 export type FileTabDataType = {
 	id: string // Уникальный ID вкладки (независимо от файла)
 	filePath: string // Путь к файлу (может быть один для нескольких табов)
@@ -26,6 +28,8 @@ export interface IWorkspaceStore {
 }
 
 export class WorkspaceStore {
+	private FsStore: FsStore
+
 	public WorkspaceStoreData: IWorkspaceStore = {
 		workspaces: [],
 		activeWorkspaceId: "",
@@ -33,7 +37,8 @@ export class WorkspaceStore {
 		expandedTreeIds: []
 	}
 
-	constructor() {
+	constructor(FsStore: FsStore) {
+		this.FsStore = FsStore
 		makeAutoObservable(this)
 	}
 
@@ -272,67 +277,71 @@ export class WorkspaceStore {
 		this.setActiveFileTabIdInWorkspace(newWsId, tab.id)
 	}
 
-	public setFileChanged = (newContent: string, workspaceId?: string) => {
-		// Если workspaceId не указан, используем ID активного рабочего пространства
-		const targetWsId =
-			workspaceId || this.WorkspaceStoreData.activeWorkspaceId
-
-		// Находим указанное рабочое пространство
-		const workspace = this.WorkspaceStoreData.workspaces.find(
-			(ws) => ws.id === targetWsId
-		)
-		if (!workspace) return
-
-		this.WorkspaceStoreData.workspaces =
-			this.WorkspaceStoreData.workspaces.map((ws) => {
-				if (ws.id === targetWsId) {
-					return {
-						...ws,
-						tabs: ws.tabs.map((tab) => {
-							if (tab.id === ws.activeWsTabId) {
-								const newChanged =
-									tab.originalContent !== newContent
-								return {
-									...tab,
-									content: newContent,
-									originalContent: newContent,
-									changed: newChanged
-								}
-							}
-							return tab
-						})
-					}
-				}
-				return ws
-			})
+	public saveFileTab = (tab: FileTabDataType | undefined) => {
+		console.log("saving", tab?.changed, tab?.content);
+		if (tab) {
+			this.FsStore.writeFile(tab.filePath, tab.content)
+				.then(() => {
+					this.setFileUnchanged(this.activeWorkspace?.id || "")
+				})
+				.catch((error) => {
+					console.error("File save error", error)
+				})
+		}
 	}
 
-	public setFileUnchanged = (workspaceId?: string) => {
-		const targetWsId =
-			workspaceId || this.WorkspaceStoreData.activeWorkspaceId
-		const workspace = this.WorkspaceStoreData.workspaces.find(
-			(ws) => ws.id === targetWsId
-		)
-		if (!workspace) return
-
+	private updateTabsStatusAcrossWorkspaces(
+		filePath: string,
+		newContent: string,
+		changed: boolean
+	) {
 		this.WorkspaceStoreData.workspaces =
-			this.WorkspaceStoreData.workspaces.map((ws) => {
-				if (ws.id === targetWsId) {
-					return {
-						...ws,
-						tabs: ws.tabs.map((tab) => {
-							if (tab.id === ws.activeWsTabId) {
-								return {
-									...tab,
-									changed: false
-								}
-							}
-							return tab
-						})
+			this.WorkspaceStoreData.workspaces.map((ws) => ({
+				...ws,
+				tabs: ws.tabs.map((tab) => {
+					if (tab.filePath === filePath) {
+						return { ...tab, content: newContent, changed: changed }
 					}
-				}
-				return ws
-			})
+					return tab
+				})
+			}))
+	}
+
+	public setFileChanged(newContent: string, workspaceId: string) {
+		const workspace = this.WorkspaceStoreData.workspaces.find(
+			(ws) => ws.id === workspaceId
+		)
+		if (!workspace || !workspace.activeWsTabId) return
+
+		const activeTab = workspace.tabs.find(
+			(tab) => tab.id === workspace.activeWsTabId
+		)
+		if (activeTab) {
+			activeTab.content = newContent
+			this.updateTabsStatusAcrossWorkspaces(
+				activeTab.filePath,
+				newContent,
+				true
+			)
+		}
+	}
+
+	public setFileUnchanged(workspaceId: string) {
+		const workspace = this.WorkspaceStoreData.workspaces.find(
+			(ws) => ws.id === workspaceId
+		)
+		if (!workspace || !workspace.activeWsTabId) return
+
+		const activeTab = workspace.tabs.find(
+			(tab) => tab.id === workspace.activeWsTabId
+		)
+		if (activeTab) {
+			this.updateTabsStatusAcrossWorkspaces(
+				activeTab.filePath,
+				activeTab.content,
+				false
+			)
+		}
 	}
 
 	public setExpandedTreeIds = (id: string, isExpanded: boolean) => {

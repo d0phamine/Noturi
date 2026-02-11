@@ -9,7 +9,6 @@ import githubDarkTheme from "@/themes/GitHub Dark.json"
 import githubLightTheme from "@/themes/GitHub Light.json"
 
 import { useStores } from "@/store"
-import { type FileTabDataType } from "@/store/WorkspaceStore"
 
 import { useColorMode } from "@/components/ui-chakra"
 
@@ -17,7 +16,7 @@ import { monacoEditorContainerRecipe } from "./style"
 
 export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 	({ workspaceId }) => {
-		const { WorkspaceStore, FsStore } = useStores()
+		const { WorkspaceStore } = useStores()
 		const { colorMode } = useColorMode()
 
 		// Получаем конкретный workspace по ID
@@ -39,18 +38,8 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 		const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
 		// Отслеживаем предыдущий файл, чтобы не обновлять лишний раз
 		const previousFilePathRef = useRef<string>("")
-
-		const onSaveHandler = (tab: FileTabDataType | undefined) => {
-			if (tab) {
-				FsStore.writeFile(tab.filePath, tab.content)
-					.then(() => {
-						WorkspaceStore.setFileUnchanged(workspaceId)
-					})
-					.catch((error) => {
-						console.error("File save error", error)
-					})
-			}
-		}
+		// Ref для отслеживания добавления action'а
+		const actionAddedRef = useRef<boolean>(false)
 
 		const handleEditorWillMount = (
 			monaco: typeof import("monaco-editor")
@@ -63,17 +52,37 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 				"githubLight",
 				githubLightTheme as editor.IStandaloneThemeData
 			)
-			monaco.editor.addEditorAction({
-				id: "save-file",
-				label: "save-file",
-				keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS], // Ctrl/Cmd + S
+		}
+
+		useEffect(() => {
+			if (!editorRef.current || actionAddedRef.current) {
+				return
+			}
+
+			const editorInstance = editorRef.current
+
+			const saveAction = editorInstance.addAction({
+				id: `save-file`,
+				label: "Save File",
+				keybindings: [2048 | 49], // Ctrl/Cmd + S (KeyMod.CtrlCmd | KeyCode.KeyS)
 				contextMenuGroupId: "navigation",
-				run: function () {
-					console.log("save file")
-					onSaveHandler(activeFile)
+				run: () => {
+					if (activeFile) {
+						WorkspaceStore.saveFileTab(activeFile)
+					}
 				}
 			})
-		}
+
+			actionAddedRef.current = true
+
+			// Cleanup функция для удаления action при размонтировании
+			return () => {
+				if (saveAction) {
+					saveAction.dispose()
+					actionAddedRef.current = false
+				}
+			}
+		}, [editorRef.current, activeFile])
 
 		// Обновляем содержимое editor при смене активного файла
 		useEffect(() => {

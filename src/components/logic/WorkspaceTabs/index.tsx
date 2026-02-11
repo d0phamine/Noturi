@@ -58,18 +58,6 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 				: null
 		}
 
-		const onSaveHandler = (tab: FileTabDataType | undefined) => {
-			if (tab) {
-				FsStore.writeFile(tab.filePath, tab.content)
-					.then(() => {
-						WorkspaceStore.setFileUnchanged(workspaceId)
-					})
-					.catch((error) => {
-						console.error("File save error", error)
-					})
-			}
-		}
-
 		return (
 			<div
 				className={workspaceTabsContainerRecipe()}
@@ -133,7 +121,9 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 									activeWsTabId === tab.id ? (
 										<SimpleDialog
 											onApprove={() => {
-												;(onSaveHandler(tab),
+												(WorkspaceStore.saveFileTab(
+													tab
+												),
 													WorkspaceStore.deleteFileTab(
 														tab.id,
 														workspaceId
