@@ -1,8 +1,6 @@
 import { makeAutoObservable } from "mobx"
 import { v4 as uuidv4 } from "uuid"
 
-import { FileTreeMetadata } from "@/store/FsStore"
-
 export type FileTabDataType = {
 	id: string // Уникальный ID вкладки (независимо от файла)
 	filePath: string // Путь к файлу (может быть один для нескольких табов)
@@ -58,7 +56,7 @@ export class WorkspaceStore {
 		)
 	}
 
-	public deleteEmptyWorkspace(): void {
+	public deleteEmptyWorkspace = () => {
 		const wasActiveWorkspaceDeleted =
 			!this.WorkspaceStoreData.workspaces.some(
 				(ws) =>
@@ -297,6 +295,7 @@ export class WorkspaceStore {
 								return {
 									...tab,
 									content: newContent,
+									originalContent: newContent,
 									changed: newChanged
 								}
 							}

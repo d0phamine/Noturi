@@ -31,9 +31,10 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 		)
 		const wsTabs = workspace?.tabs || []
 		const activeWsTabId = workspace?.activeWsTabId || ""
-		
+
 		// Проверяем, является ли этот workspace активным
-		const isActiveWorkspace = WorkspaceStore.WorkspaceStoreData.activeWorkspaceId === workspaceId
+		const isActiveWorkspace =
+			WorkspaceStore.WorkspaceStoreData.activeWorkspaceId === workspaceId
 
 		const [hoveredTabId, setHoveredTabId] = useState<string | null>(null)
 
@@ -57,15 +58,16 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 				: null
 		}
 
-		const onSaveHandler = (tab: FileTabDataType) => {
-			FsStore.writeFile(tab.filePath, tab.content)
-				.then(() => {
-					WorkspaceStore.setFileUnchanged(workspaceId)
-					WorkspaceStore.deleteFileTab(tab.id, workspaceId)
-				})
-				.catch((error) => {
-					console.error("File save error", error)
-				})
+		const onSaveHandler = (tab: FileTabDataType | undefined) => {
+			if (tab) {
+				FsStore.writeFile(tab.filePath, tab.content)
+					.then(() => {
+						WorkspaceStore.setFileUnchanged(workspaceId)
+					})
+					.catch((error) => {
+						console.error("File save error", error)
+					})
+			}
 		}
 
 		return (
@@ -88,23 +90,30 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 				>
 					<Tabs.List css={tabsStyles.list}>
 						{wsTabs?.map((tab) => {
-							const isActiveInThisWorkspace = activeWsTabId === tab.id
+							const isActiveInThisWorkspace =
+								activeWsTabId === tab.id
 							const isThisWorkspaceActive = isActiveWorkspace
-							const shouldShowActiveShadow = isActiveInThisWorkspace && isThisWorkspaceActive
+							const shouldShowActiveShadow =
+								isActiveInThisWorkspace && isThisWorkspaceActive
 
 							return (
 								<Tabs.Trigger
 									value={tab.id}
 									css={tabsStyles.trigger}
 									style={
-										shouldShowActiveShadow 
-											? undefined 
+										shouldShowActiveShadow
+											? undefined
 											: { boxShadow: "none" }
 									}
 									key={tab.id}
 									onClick={() => {
-										WorkspaceStore.setActiveWorkspace(workspaceId)
-										WorkspaceStore.setActiveFileTabIdInWorkspace(workspaceId, tab.id)
+										WorkspaceStore.setActiveWorkspace(
+											workspaceId
+										)
+										WorkspaceStore.setActiveFileTabIdInWorkspace(
+											workspaceId,
+											tab.id
+										)
 									}}
 									onMouseEnter={() => setHoveredTabId(tab.id)}
 									onMouseLeave={() => setHoveredTabId(null)}
@@ -115,15 +124,26 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 									}
 								>
 									<Box css={tabsStyles.iconholder}>
-										<ExplorerFileIcon fileName={tab.fileName} />
+										<ExplorerFileIcon
+											fileName={tab.fileName}
+										/>
 									</Box>
 									{tab.fileName}
 									{hoveredTabId === tab.id ||
 									activeWsTabId === tab.id ? (
 										<SimpleDialog
-											onApprove={() => onSaveHandler(tab)}
+											onApprove={() => {
+												;(onSaveHandler(tab),
+													WorkspaceStore.deleteFileTab(
+														tab.id,
+														workspaceId
+													))
+											}}
 											onCancel={() =>
-												WorkspaceStore.deleteFileTab(tab.id, workspaceId)
+												WorkspaceStore.deleteFileTab(
+													tab.id,
+													workspaceId
+												)
 											}
 											title="Do you want to save the changes you made?"
 											approveText="save"
@@ -144,8 +164,8 @@ export const WorkspaceTabs: FC<WorkspaceTabsProps> = observer(
 											</SimpleDialog.Trigger>
 											<SimpleDialog.Content>
 												<p>
-													Your changes will be lost if you
-													don't save them.
+													Your changes will be lost if
+													you don't save them.
 												</p>
 											</SimpleDialog.Content>
 										</SimpleDialog>

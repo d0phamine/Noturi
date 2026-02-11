@@ -23,6 +23,9 @@ export const WorkspaceContent: FC<{ workspaceId: string }> = observer(
 		const workspace = WorkspaceStore.WorkspaceStoreData.workspaces.find(
 			(ws) => ws.id === workspaceId
 		)
+		const isActiveWorkspace =
+			WorkspaceStore.WorkspaceStoreData.activeWorkspaceId === workspaceId
+
 		if (!workspace) {
 			return null
 		}
@@ -34,14 +37,14 @@ export const WorkspaceContent: FC<{ workspaceId: string }> = observer(
 					className={workspaceHeaderRecipe()}
 				>
 					<WorkspaceTabs workspaceId={workspaceId} />
-					<WorkspaceAdditions />
+					{isActiveWorkspace ? <WorkspaceAdditions /> : null}
 				</div>
 				<div
 					data-component="workspace-content"
 					className={workspaceContentRecipe()}
 					ref={contentRef}
 				>
-					<MonacoEditor workspaceId={workspaceId}/>
+					<MonacoEditor workspaceId={workspaceId} />
 				</div>
 			</div>
 		)

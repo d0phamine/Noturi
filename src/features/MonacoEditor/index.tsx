@@ -9,6 +9,7 @@ import githubDarkTheme from "@/themes/GitHub Dark.json"
 import githubLightTheme from "@/themes/GitHub Light.json"
 
 import { useStores } from "@/store"
+import { type FileTabDataType } from "@/store/WorkspaceStore"
 
 import { useColorMode } from "@/components/ui-chakra"
 
@@ -16,21 +17,19 @@ import { monacoEditorContainerRecipe } from "./style"
 
 export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 	({ workspaceId }) => {
-		const { WorkspaceStore } = useStores()
+		const { WorkspaceStore, FsStore } = useStores()
 		const { colorMode } = useColorMode()
 
 		// Получаем конкретный workspace по ID
 		const workspace = WorkspaceStore.WorkspaceStoreData.workspaces.find(
 			(ws) => ws.id === workspaceId
 		)
-		
+
 		// Если этот workspace был удален, не рендерим ничего
 		if (!workspace) {
-			return (
-				<div className={monacoEditorContainerRecipe()}></div>
-			)
+			return <div className={monacoEditorContainerRecipe()}></div>
 		}
-		
+
 		const activeWsTabId = workspace.activeWsTabId || ""
 		const activeFile = workspace.tabs.find(
 			(tab) => tab.id === activeWsTabId
@@ -40,6 +39,18 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 		const editorRef = useRef<editor.IStandaloneCodeEditor | null>(null)
 		// Отслеживаем предыдущий файл, чтобы не обновлять лишний раз
 		const previousFilePathRef = useRef<string>("")
+
+		const onSaveHandler = (tab: FileTabDataType | undefined) => {
+			if (tab) {
+				FsStore.writeFile(tab.filePath, tab.content)
+					.then(() => {
+						WorkspaceStore.setFileUnchanged(workspaceId)
+					})
+					.catch((error) => {
+						console.error("File save error", error)
+					})
+			}
+		}
 
 		const handleEditorWillMount = (
 			monaco: typeof import("monaco-editor")
@@ -52,6 +63,16 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 				"githubLight",
 				githubLightTheme as editor.IStandaloneThemeData
 			)
+			monaco.editor.addEditorAction({
+				id: "save-file",
+				label: "save-file",
+				keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS], // Ctrl/Cmd + S
+				contextMenuGroupId: "navigation",
+				run: function () {
+					console.log("save file")
+					onSaveHandler(activeFile)
+				}
+			})
 		}
 
 		// Обновляем содержимое editor при смене активного файла
@@ -85,7 +106,7 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 			}
 
 			const currentContent = model.getValue()
-			
+
 			// Обновляем только если отличается от текущего в Editor'е
 			// Это избегает сброса undo/redo истории при собственном редактировании
 			if (currentContent !== activeFile.content) {
@@ -96,15 +117,17 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 		// Если нет активного файла, показываем пустой контейнер
 		if (!activeFile) {
 			return (
-				<div 
+				<div
 					className={monacoEditorContainerRecipe()}
-					onClick={() => WorkspaceStore.setActiveWorkspace(workspaceId)}
+					onClick={() =>
+						WorkspaceStore.setActiveWorkspace(workspaceId)
+					}
 				></div>
 			)
 		}
 
 		return (
-			<div 
+			<div
 				className={monacoEditorContainerRecipe()}
 				onClick={() => WorkspaceStore.setActiveWorkspace(workspaceId)}
 			>
@@ -131,10 +154,11 @@ export const MonacoEditor: FC<{ workspaceId: string }> = observer(
 					options={{
 						automaticLayout: true,
 						scrollBeyondLastLine: false,
-						minimap: { enabled: true }
+						minimap: { enabled: false }
 					}}
 				/>
 			</div>
 		)
 	}
 )
+
